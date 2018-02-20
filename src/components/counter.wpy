@@ -27,61 +27,59 @@
   </view>
 </template>
 <script>
-  import wepy from 'wepy'
-  import { connect } from 'wepy-redux'
-  import { INCREMENT, DECREMENT } from '../store/types/counter'
-  import { asyncInc } from '../store/actions'
+	import wepy from 'wepy'
+	import { connect } from 'wepy-redux'
+	import { INCREMENT, DECREMENT } from '../store/types/counter'
+	import { asyncInc } from '../store/actions'
 
-  @connect({
-    stateNum (state) {
-      return state.counter.num
-    },
-    asyncNum (state) {
-      return state.counter.asyncNum
-    }
-  }, {
-    incNum: INCREMENT,
-    decNum: DECREMENT,
-    asyncInc
-  })
+	@connect({
+		stateNum (state) {
+			return state.counter.num
+		},
+		asyncNum (state) {
+			return state.counter.asyncNum
+		}
+	}, {
+		incNum: INCREMENT,
+		decNum: DECREMENT,
+		asyncInc
+	})
 
-  export default class Counter extends wepy.component {
-    props = {
-      num: {
-        type: [Number, String],
-        coerce: function (v) {
-          return +v
-        },
-        default: 50
-      }
-    }
+	export default class Counter extends wepy.component {
+		props = {
+			num: {
+				type: [Number, String],
+				coerce: function (v) {
+					return +v
+				},
+				default: 50
+			}
+		}
 
-    data = {
-    }
-    events = {
-      'index-broadcast': (...args) => {
-        let $event = args[args.length - 1]
-        console.log(`${this.$name} receive ${$event.name} from ${$event.source.$name}`)
-      }
-    }
+		events = {
+			'index-broadcast': (...args) => {
+				let $event = args[args.length - 1]
+				console.log(`${this.$name} receive ${$event.name} from ${$event.source.$name}`)
+			}
+		}
 
-    watch = {
-      num (curVal, oldVal) {
-        console.log(`旧值：${oldVal}，新值：${curVal}`)
-      }
-    }
+		watch = {
+			num (curVal, oldVal) {
+				console.log(`旧值：${oldVal}，新值：${curVal}`)
+			}
+		}
 
-    methods = {
-      plus () {
-        this.num = this.num + 1
-        console.log(this.$name + ' plus tap')
+		methods = {
+			plus () {
+				this.num = this.num + 1
+				console.log(this.$name + ' plus tap')
 
-        this.$emit('index-emit', 1, 2, 3)
-      },
-      minus () {
-        this.num = this.num - 1
-        console.log(this.$name + ' minus tap')
-      }
-    }
-  }
+				this.$emit('index-emit', 1, 2, 3)
+			},
+			minus () {
+				this.num = this.num - 1
+				console.log(this.$name + ' minus tap')
+			}
+		}
+	}
 </script>
