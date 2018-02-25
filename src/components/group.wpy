@@ -17,19 +17,19 @@
 	import GroupItem from './groupitem'
 
 	export default class Group extends wepy.component {
-		props = {
-			grouplist: {},
-			index: {}
-		}
+	  props = {
+	    grouplist: {},
+	    index: {}
+	  }
 
-		components = {
-			groupitem: GroupItem
-		}
-		methods = {
-			tap () {
-				this.grouplist.name = `Parent Random(${Math.random()})`
-				console.log(`Clicked Group ${this.$index}, ID is ${this.grouplist.id}`)
-			}
-		}
+	  components = {
+	    groupitem: GroupItem
+	  }
+	  methods = {
+	    tap () {
+	      this.grouplist.name = `Parent Random(${Math.random()})`
+	      console.log(`Clicked Group ${this.$index}, ID is ${this.grouplist.id}`)
+	    }
+	  }
 	}
 </script>

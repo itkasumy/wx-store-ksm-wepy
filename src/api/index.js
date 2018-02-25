@@ -19,9 +19,9 @@ const getHomeDiscoverList = params => wxRequest(params, apiMall + '/api/mall/dis
 const getAdList = params => wxRequest(params, apiMall + '/api/adverts/list')
 
 module.exports = {
-	getDiscoverList,
-	wxJsCode2Session,
-	user2session,
-	getHomeDiscoverList,
-	getAdList
+  getDiscoverList,
+  wxJsCode2Session,
+  user2session,
+  getHomeDiscoverList,
+  getAdList
 }

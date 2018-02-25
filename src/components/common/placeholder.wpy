@@ -8,15 +8,15 @@
 <script>
 import wepy from 'wepy'
 export default class Placeholder extends wepy.component {
-	props = {
-		show: {
-			type: Boolean,
-			default: false
-		},
-		message: {
-			default: '没有相关信息'
-		}
-	}
+  props = {
+    show: {
+      type: Boolean,
+      default: false
+    },
+    message: {
+      default: '没有相关信息'
+    }
+  }
 }
 </script>
 
