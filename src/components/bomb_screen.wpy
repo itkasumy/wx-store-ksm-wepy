@@ -125,4 +125,3 @@ export default class bombScreen extends wepy.component {
   align-items: center;
 }
 </style>
-

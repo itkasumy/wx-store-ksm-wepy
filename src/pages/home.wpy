@@ -41,8 +41,8 @@
 		</view>
 
 		<!-- 发现好商品模块 -->
-		<view class="recommend-title">商品推荐</view>
 		<discover :list.sync="discoverList"></discover>
+		<view class="recommend-title">商品推荐</view>
 
 		<!-- 加载更多时动画 -->
 		<bottomLoadMore :show.sync="showLoading" message="正在加载"></bottomLoadMore>
@@ -77,7 +77,7 @@
 	    discover: Discover,
 	    bottomLoadMore: BottomLoadMore,
 	    placeholder: Placeholder,
-      bombscreen: Bombscreen
+    bombscreen: Bombscreen
 	  }
 	  data = {
 	    imgUrls: [
@@ -108,7 +108,7 @@
 	    })
       // console.log(json)
 	    if (json.data.code === '0') {
-        that.discoverList = [...that.discoverList, ...json.data.list]
+      that.discoverList = [...that.discoverList, ...json.data.list]
         // console.log(that.discoverList)
         // 后台的数据不再返回 page_total
 	      if (json.data.page_total) {
@@ -149,8 +149,8 @@
 	      }
 	      wepy.navigateTo({
 	        url: url
-	    },
 	      })
+	    },
 	    onShareAppMessage: res => {
 	      if (res.from === 'button') {
           // 来自页面内转发按钮

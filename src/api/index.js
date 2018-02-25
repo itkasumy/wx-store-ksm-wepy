@@ -14,6 +14,7 @@ const user2session = params => wxRequest(params, apiMall + '/api/wechat/user2ses
 // 商品接口---begin
 // 首页发现商品接口
 const getHomeDiscoverList = params => wxRequest(params, apiMall + '/api/mall/discoverList')
+const hostGoodsList = params => wxRequest(params, apiMall + '/api/home/hostGoodsList')
 
 // 查询广告列表
 const getAdList = params => wxRequest(params, apiMall + '/api/adverts/list')
@@ -23,5 +24,6 @@ module.exports = {
   wxJsCode2Session,
   user2session,
   getHomeDiscoverList,
-  getAdList
+  getAdList,
+  hostGoodsList
 }
