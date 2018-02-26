@@ -8,7 +8,7 @@
       <view wx:for="{{cate.attrs}}" wx:key="item">
         <view class="doc">
           <i class="lx">◈</i>{{item.attrName.attrName}}:
-          <view wx:for="item.attrValList" wx:key="item">{{item.attrVal}}</view>
+          <view wx:for="{{item.attrValList}}" wx:key="{{item}}">{{item.attrVal}}</view>
         </view>
       </view>
     </view>

@@ -21,7 +21,8 @@ export default class extends wepy.app {
   config = {
     pages: [
       'pages/home',
-      'pages/home_detail'
+      'pages/home_detail',
+      'pages/goods_detail'
     ],
     window: {
       backgroundTextStyle: 'dark',

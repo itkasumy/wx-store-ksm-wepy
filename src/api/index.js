@@ -16,6 +16,27 @@ const user2session = params => wxRequest(params, apiMall + '/api/wechat/user2ses
 const getHomeDiscoverList = params => wxRequest(params, apiMall + '/api/mall/discoverList')
 const hostGoodsList = params => wxRequest(params, apiMall + '/api/home/hostGoodsList')
 
+// 查询商品详情信息
+const goodsDetail = params => wxRequest(params, apiMall + '/api/mall/goods')
+
+// 商品加入购物车
+const addCart = params => wxRequest(params, apiMall + '/api/mall/goodsCart/add')
+
+// 商品收藏
+const goodsFavorite = params => wxRequest(params, apiMall + '/api/mall/goodsFavorite/add')
+
+// 商品收藏删除
+const goodsUnFavorite = params => wxRequest(params, apiMall + '/api/mall/goodsFavorite/delete')
+
+// 商品是否已收藏
+const goodsIsFavorite = params => wxRequest(params, apiMall + '/api/mall/goodsFavorite/goodsIsFavorite')
+
+/**
+ * 用户信息相关
+ */
+// 添加用户足迹
+const addBrowser = params => wxRequest(params, apiMall + '/api/userBrowse/add')
+
 // 查询广告列表
 const getAdList = params => wxRequest(params, apiMall + '/api/adverts/list')
 
@@ -25,5 +46,11 @@ module.exports = {
   user2session,
   getHomeDiscoverList,
   getAdList,
-  hostGoodsList
+  hostGoodsList,
+  goodsDetail,
+  addCart,
+  goodsFavorite,
+  goodsUnFavorite,
+  goodsIsFavorite,
+  addBrowser
 }
