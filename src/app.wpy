@@ -14,15 +14,16 @@ import 'wepy-async-function'
 // const store = configStore()
 // setStore(store)
 
-// import { USER_SPECICAL_INFO, USER_INFO, SYSTEM_INFO, ADDRESS_ID, SEL_CLASS_CODE } from './utils/constant'
-// import { wxJsCode2Session, user2session } from './api'
+import { USER_SPECICAL_INFO, USER_INFO, SYSTEM_INFO } from './utils/constant'
+import { wxJsCode2Session } from './api'
 
 export default class extends wepy.app {
   config = {
     pages: [
       'pages/home',
       'pages/home_detail',
-      'pages/goods_detail'
+      'pages/goods_detail',
+      'pages/classify'
     ],
     window: {
       backgroundTextStyle: 'dark',
@@ -44,8 +45,7 @@ export default class extends wepy.app {
           'selectedIconPath': 'images/icon_home_active.png'
         },
         {
-          'pagePath': 'pages/home',
-          // 'pagePath': 'pages/classify',
+          'pagePath': 'pages/classify',
           'text': '分类',
           'iconPath': 'images/icon_classify.png',
           'selectedIconPath': 'images/icon_classify_active.png'
@@ -81,57 +81,57 @@ export default class extends wepy.app {
   }
 
   onLaunch() {
-  //   // this.testAsync()
-  //   const that = this
-  //   // 用户信息
-  //   let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {}
-  //   // 用户普通信息
-  //   let userInfo = wepy.getStorageSync(USER_INFO) || {}
+    // this.testAsync()
+    // const that = this
+    // 用户信息
+    let userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {}
+    // 用户普通信息
+    let userInfo = wepy.getStorageSync(USER_INFO) || {}
 
-  //   // 如果信息过期
-  //   if ((!userSpecialInfo.openid || (userSpecialInfo.expires_in || Date.now()) < (Date.now() + 600)) && !userInfo.nickName) {
-  //     let res = await wepy.login()
-  //     if (res.code) {
-  //       let d = that.globalData; // 这里存储了 appid secret token
-  //       // 存储 userInfo
-  //       let c = await wepy.getUserInfo()
-  //       wepy.setStorageSync(USER_INFO, c.userInfo)
+    // 如果信息过期
+    if ((!userSpecialInfo.openid || (userSpecialInfo.expires_in || Date.now()) < (Date.now() + 600)) && !userInfo.nickName) {
+      let res = wepy.login()
+      if (res.code) {
+        // let d = that.globalData // 这里存储了 appid secret token
+        // 存储 userInfo
+        let c = wepy.getUserInfo()
+        wepy.setStorageSync(USER_INFO, c.userInfo)
 
-  //       // 存储系统信息
-  //       let systemInfo = wepy.getSystemInfoSync()
-  //       wepy.setStorageSync(SYSTEM_INFO, systemInfo)
+        // 存储系统信息
+        let systemInfo = wepy.getSystemInfoSync()
+        wepy.setStorageSync(SYSTEM_INFO, systemInfo)
 
-  //       wxJsCode2Session({
-  //         query: {
-  //           jsCode: res.code,
-  //           nickName: c.userInfo.nickName
-  //         }
-  //       }).then(resp => {
-  //         const rlt = resp.data
-  //         console.log('wxJsCode2Session...', JSON.stringfy(rlt))
-  //         if (rlt.result) {
-  //           const data = rlt.data
-  //           if (data.openid) {
-  //             const obj = {}
-  //             obj.openid = data.openid
-  //             obj.expires_in = Date.now() + data.expires_in
-  //             // 存储 openid
-  //             wepy.setStorageSync(USER_SPECICAL_INFO, obj)
-  //           }
-  //         } else {
-  //           const obj = {}
-  //           obj.openid = ''
-  //           obj.expires_in = '7200'
-  //           // 存储 openid
-  //           wepy.setStorageSync(USER_SPECICAL_INFO, obj)
-  //         }
-  //       })
+        wxJsCode2Session({
+          query: {
+            jsCode: res.code,
+            nickName: c.userInfo.nickName
+          }
+        }).then(resp => {
+          const rlt = resp.data
+          console.log('wxJsCode2Session...', JSON.stringfy(rlt))
+          if (rlt.result) {
+            const data = rlt.data
+            if (data.openid) {
+              const obj = {}
+              obj.openid = data.openid
+              obj.expires_in = Date.now() + data.expires_in
+              // 存储 openid
+              wepy.setStorageSync(USER_SPECICAL_INFO, obj)
+            }
+          } else {
+            const obj = {}
+            obj.openid = ''
+            obj.expires_in = '7200'
+            // 存储 openid
+            wepy.setStorageSync(USER_SPECICAL_INFO, obj)
+          }
+        })
 
-  //       let url = 'https://api.weixin.qq.com/sns/jscode2session?appid=' + d.appid + '&secret=' + d.secret + '&js_code=' + res.code + '&grant_type=authorization_code'
-  //     } else {
-  //       console.log('获取用户登录状态失败！' + res.errMsg)
-  //     }
-  //   }
+        // let url = 'https://api.weixin.qq.com/sns/jscode2session?appid=' + d.appid + '&secret=' + d.secret + '&js_code=' + res.code + '&grant_type=authorization_code'
+      } else {
+        console.log('获取用户登录状态失败！' + res.errMsg)
+      }
+    }
   }
 
   sleep (s) {

@@ -37,6 +37,18 @@ const goodsIsFavorite = params => wxRequest(params, apiMall + '/api/mall/goodsFa
 // 添加用户足迹
 const addBrowser = params => wxRequest(params, apiMall + '/api/userBrowse/add')
 
+/**
+ * 商品分类 --- start
+ */
+// 一级分类
+const rootCtegoryList = params => wxRequest(params, apiMall + '/api/mall/rootCtegoryList')
+
+// 二级，三级分类
+const childGoodsCatetoryList = params => wxRequest(params, apiMall + '/api/mall/childGoodsCatetoryList')
+/**
+ * 商品分类 --- end
+ */
+
 // 查询广告列表
 const getAdList = params => wxRequest(params, apiMall + '/api/adverts/list')
 
@@ -52,5 +64,7 @@ module.exports = {
   goodsFavorite,
   goodsUnFavorite,
   goodsIsFavorite,
-  addBrowser
+  addBrowser,
+  rootCtegoryList,
+  childGoodsCatetoryList
 }
