@@ -23,7 +23,8 @@ export default class extends wepy.app {
       'pages/home',
       'pages/home_detail',
       'pages/goods_detail',
-      'pages/classify'
+      'pages/classify',
+      'pages/shop_cart'
     ],
     window: {
       backgroundTextStyle: 'dark',

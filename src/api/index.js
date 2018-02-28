@@ -16,6 +16,16 @@ const user2session = params => wxRequest(params, apiMall + '/api/wechat/user2ses
 const getHomeDiscoverList = params => wxRequest(params, apiMall + '/api/mall/discoverList')
 const hostGoodsList = params => wxRequest(params, apiMall + '/api/home/hostGoodsList')
 
+// 用户的购物车商品列表
+const cartList = params => wxRequest(params, apiMall + '/api/mall/goodsCart/list')
+
+// 购物车的商品选中状态
+const cartCheck = params => wxRequest(params, apiMall + '/api/home/goodsCart/check')
+const cartCheckAll = params => wxRequest(params, apiMall + '/api/home/goodsCart/checkAll')
+const hostGoodsList = params => wxRequest(params, apiMall + '/api/home/hostGoodsList')
+const hostGoodsList = params => wxRequest(params, apiMall + '/api/home/hostGoodsList')
+const hostGoodsList = params => wxRequest(params, apiMall + '/api/home/hostGoodsList')
+
 // 查询商品详情信息
 const goodsDetail = params => wxRequest(params, apiMall + '/api/mall/goods')
 

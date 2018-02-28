@@ -1,0 +1,92 @@
+<template>
+  <view class="swipe-item-wrapper">
+    <view
+      class="swipe-content"
+      style="left: {{swipeData.style === 0 || swipeData.style === 'undefined' ? '0' : swipeData.style + 'rpx'}}"
+      @touchstart="ts"
+      @touchmove="tm"
+      @touchend="te"
+    >
+      <slot></slot>
+    </view>
+    <view class="swipe-actives actions-right">
+      <view class="swipe-btn del" @tap.stop="handleRightBtnTap({{swipeData}})">删除</view>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+
+export default class Counter extends wepy.component {
+  props = {
+    swipeData: {
+      type: Object,
+      default: []
+    }
+  }
+
+  data = {
+    startX: null,
+    moveX: null
+  }
+
+  onLoad () {
+    if (this.swipeData) {
+      this.swipeData.style = 0
+    }
+  }
+
+  methods = {
+    ts (e) {
+      if (e.touchs.length === 1) {
+        this.startX = e.touchs[0].clientX
+        this.moveX = e.touchs[0].clientX
+      }
+    },
+
+    tm (e) {
+      if (e.touchs.length === 1) {
+        var distenceX = this.moveX - e.touchs[0].clientX
+        this.moveX = e.touchs[0].clientX
+
+        if ((this.swipeData.style - distenceX) < -140) {
+          this.swipeData.style = -140
+        } else if ((this.swipeData.style - distenceX) > 0) {
+          this.swipeData.style = 0
+        } else {
+          this.swipeData.style = this.swipeData.style - distenceX
+        }
+
+        this.setData({
+          swipeData: this.props.swipeData
+        })
+      }
+    },
+
+    te (e) {
+      if (e.changedTouchs.length === 1) {
+        if (this.swipeData.style <= -70) {
+          this.swipeData.style = -140
+        } else {
+          this.swipeData.style = 0
+        }
+
+        this.setData({
+          swipeData: this.props.swipeData
+        })
+      }
+    },
+
+    handleRightBtnTap (item) {
+      item = JSON.parse(JSON.stringify(item))
+      delete item.style
+      this.$emit('delItem', item)
+    }
+  }
+}
+</script>
+
+<style lang="less">
+
+</style>
