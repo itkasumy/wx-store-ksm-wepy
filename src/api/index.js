@@ -16,6 +16,9 @@ const user2session = params => wxRequest(params, apiMall + '/api/wechat/user2ses
 const getHomeDiscoverList = params => wxRequest(params, apiMall + '/api/mall/discoverList')
 const hostGoodsList = params => wxRequest(params, apiMall + '/api/home/hostGoodsList')
 
+// 查询商品列表
+const getGoodsList = params => wxRequest(params, apiMall + '/api/mall/searchGoodsList')
+
 // 用户的购物车商品列表
 const cartList = params => wxRequest(params, apiMall + '/api/mall/goodsCart/list')
 
@@ -58,6 +61,15 @@ const addBrowser = params => wxRequest(params, apiMall + '/api/userBrowse/add')
 // 用户是否绑定手机号
 const getUserInfo = params => wxRequest(params, apiMall + '/api/userCenter/getUserInfo')
 
+// 查询关键字保存
+const addSearchKeyword = params => wxRequest(params, apiMall + '/api/searchkeyword/add')
+
+// 查询关键字列表
+const searchKeywordList = params => wxRequest(params, apiMall + '/api/searchkeyword/list')
+
+// 查询关键字清除
+const clearSearchKeyword = params => wxRequest(params, apiMall + '/api/searchkeyword/clear')
+
 /**
  * 商品分类 --- start
  */
@@ -93,5 +105,9 @@ module.exports = {
   cartCheckAll,
   cartDel,
   cartUpdateNum,
-  getUserInfo
+  getUserInfo,
+  getGoodsList,
+  addSearchKeyword,
+  searchKeywordList,
+  clearSearchKeyword
 }
