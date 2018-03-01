@@ -24,7 +24,8 @@ export default class extends wepy.app {
       'pages/home_detail',
       'pages/goods_detail',
       'pages/classify',
-      'pages/shop_cart'
+      'pages/shop_cart',
+      'pages/info'
     ],
     window: {
       backgroundTextStyle: 'dark',
@@ -52,15 +53,13 @@ export default class extends wepy.app {
           'selectedIconPath': 'images/icon_classify_active.png'
         },
         {
-          'pagePath': 'pages/home',
-          // 'pagePath': 'pages/shop_cart',
+          'pagePath': 'pages/shop_cart',
           'text': '购物车',
           'iconPath': 'images/icon_shop_cart.png',
           'selectedIconPath': 'images/icon_shop_cart_active.png'
         },
         {
-          'pagePath': 'pages/home',
-          // 'pagePath': 'pages/info',
+          'pagePath': 'pages/info',
           'text': '我的',
           'iconPath': 'images/icon_info.png',
           'selectedIconPath': 'images/icon_info_active.png'

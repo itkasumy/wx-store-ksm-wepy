@@ -1,6 +1,6 @@
 <template>
   <view class="goodsList">
-    <repeat for="list" key="index" index="index" item="item">
+    <repeat for="{{list}}" key="index" index="index" item="item">
       <view class="list_box">
         <swiperDelete :swiperData="item" @delItem.user="handleDelItem">
           <view class="goods-info">
@@ -87,7 +87,7 @@ import swiperDelete from './common/wepy-swipe-delete'
 
 export default class shopCart extends wepy.component {
   components = {
-    swiperData
+    swiperDelete
   }
 
   data = {
@@ -112,7 +112,7 @@ export default class shopCart extends wepy.component {
       }
     })
 
-    // console.log(json)
+    console.log(json)
 
     if (this.data.code === '0') {
       const data = json.data
@@ -192,7 +192,7 @@ export default class shopCart extends wepy.component {
 
     // console.log(josn)
 
-    if (json.data.code = '0') {
+    if (json.data.code === '0') {
       this.list[index].num = num
       this.totalPrice = parseInt(this.totalPrice) + parseInt(this.list[index].price)
       this.operating = false

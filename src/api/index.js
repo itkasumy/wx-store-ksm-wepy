@@ -20,11 +20,19 @@ const hostGoodsList = params => wxRequest(params, apiMall + '/api/home/hostGoods
 const cartList = params => wxRequest(params, apiMall + '/api/mall/goodsCart/list')
 
 // 购物车的商品选中状态
-const cartCheck = params => wxRequest(params, apiMall + '/api/home/goodsCart/check')
-const cartCheckAll = params => wxRequest(params, apiMall + '/api/home/goodsCart/checkAll')
-const hostGoodsList = params => wxRequest(params, apiMall + '/api/home/hostGoodsList')
-const hostGoodsList = params => wxRequest(params, apiMall + '/api/home/hostGoodsList')
-const hostGoodsList = params => wxRequest(params, apiMall + '/api/home/hostGoodsList')
+const cartCheck = params => wxRequest(params, apiMall + '/api/mall/goodsCart/check')
+
+// 购物车商品的选中状态(全选)
+const cartCheckAll = params => wxRequest(params, apiMall + '/api/mall/goodsCart/checkAll')
+
+// 购物车的商品删除
+const cartDel = params => wxRequest(params, apiMall + '/api/mall/goodsCart/delete')
+
+// 购物车的商品数量更新
+const cartUpdateNum = params => wxRequest(params, apiMall + '/api/mall/goodsCart/updateNum')
+
+// 直接购买商品
+// const preOrder = params => wxRequest(params, apiMall + '/api/mall/goodsOrder/commitData')
 
 // 查询商品详情信息
 const goodsDetail = params => wxRequest(params, apiMall + '/api/mall/goods')
@@ -46,6 +54,9 @@ const goodsIsFavorite = params => wxRequest(params, apiMall + '/api/mall/goodsFa
  */
 // 添加用户足迹
 const addBrowser = params => wxRequest(params, apiMall + '/api/userBrowse/add')
+
+// 用户是否绑定手机号
+const getUserInfo = params => wxRequest(params, apiMall + '/api/userCenter/getUserInfo')
 
 /**
  * 商品分类 --- start
@@ -76,5 +87,11 @@ module.exports = {
   goodsIsFavorite,
   addBrowser,
   rootCtegoryList,
-  childGoodsCatetoryList
+  childGoodsCatetoryList,
+  cartList,
+  cartCheck,
+  cartCheckAll,
+  cartDel,
+  cartUpdateNum,
+  getUserInfo
 }
