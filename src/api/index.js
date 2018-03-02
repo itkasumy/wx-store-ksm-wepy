@@ -77,6 +77,9 @@ const doSign = params => wxRequest(params, apiMall + '/api/userSign/doSign')
 // 获取最近7天的签到情况
 const getSignDate = params => wxRequest(params, apiMall + '/api/userSign/getSignDate')
 
+// 查询用户的已订购产品
+const goodsUserOrderList = params => wxRequest(params, apiMall + '/api/mall/goodsOrder/goodsUserOrderList')
+
 /**
  * 商品分类 --- start
  */
@@ -119,5 +122,6 @@ module.exports = {
   clearSearchKeyword,
   userSignInfo,
   doSign,
-  getSignDate
+  getSignDate,
+  goodsUserOrderList
 }
