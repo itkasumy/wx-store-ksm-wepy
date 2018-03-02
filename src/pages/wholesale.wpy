@@ -11,11 +11,10 @@ import tip from '../utils/tip'
 import BottomLoadMore from '../components/common/bottomLoadMore'
 import Placeholder from '../components/common/placeholder'
 import api from '../api'
-import { USER_SPECICAL_INFO } from '../utils/constant'
 
-export default class exchangeGoods extends wepy.page {
+export default class wholesale extends wepy.page {
   config = {
-    navigationBarTitleText: '换货专区'
+    navigationBarTitleText: '特价专区'
   }
 
   components = {
@@ -35,19 +34,16 @@ export default class exchangeGoods extends wepy.page {
     preventRepeatRequest: false
   }
 
-  async getMyOrderGoodsList (currentPage, size) {
-    const userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {}
-    const openId = userSpecialInfo.openid
-    const json = await api.goodsUserOrderList({
+  async getGoodList (currentPage, size) {
+    const json = await api.hostGoodsList({
       query: {
         page: currentPage || 1,
         size: size || 10,
-        openId: openId,
-        type: 'refund'
+        locationFlag: 101
       }
     })
 
-    // console.log(json)
+    console.log(json)
 
     if (json.data.code === '0') {
       this.list = [...this.list, ...json.data.list]
@@ -58,13 +54,29 @@ export default class exchangeGoods extends wepy.page {
     } else {
       tip.error(json.data.msg)
     }
-    this.showLoading = true
+    this.showLoading()
     this.$apply()
   }
 
   onLoad () {
     this.list = []
-    this.getMyOrderGoodsList()
+    this.getGoodList()
+  }
+
+  onReachBottom () {
+    const that = this
+    that.showLoading = true
+    if (that.page_total > that.currentPage) {
+      if (that.preventRepeatRequest) {
+        return true
+      }
+      that.preventRepeatRequest = true
+      that.currentPage++
+      that.getGoodList(that.currentPage)
+      that.preventRepeatRequest = false
+    } else {
+      that.showLoading = true
+    }
   }
 }
 </script>

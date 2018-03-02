@@ -1,0 +1,128 @@
+<template>
+  <view class="tab_box">
+    <tab @currentTab.user="getCurrentTab" :currentTab.sync="currentTab" :tabList.sync="tabList"></tab>
+  </view>
+  <swiper current="{{currentTab}}" class="swiper-box" duration="300" style="height: {{winHeight - 31}} rpx" bindchange="bindChange">
+    <block wx:for="{{tabList}}" wx:key="index">
+      <swiper-item>
+        <scroll-view scroll-y="true" class="swiper-item-box" style="{{winHeight - 31}}rpx" bindscrolltolower="onReachBottom"></scroll-view>
+        <shopGridList :purchasetype.sync="purchasetype" :list.sync="list"></shopGridList>
+        <bottomLoadMore :show.sync="showLoading" message="正在加载"></bottomLoadMore>
+        <placeholder :show.sync="is_empty" message="暂无待补货数据"></placeholder>
+      </swiper-item>
+    </block>
+  </swiper>
+</template>
+
+<script>
+import wepy from 'wepy'
+import Tab from '../components/tab'
+import ShopGridList from '../components/shop_grid_list'
+import tip from '../utils/tip'
+import BottomLoadMore from '../components/common/bottomLoadMore'
+import Placeholder from '../components/common/placeholder'
+import api from '../api'
+import { SYSTEM_INFO, USER_SPECICAL_INFO } from '../utils/constant'
+
+export default class replenishmentGoods extends wepy.page {
+  config = {
+    navigationBarTitleText: '我要补货'
+  }
+
+  components = {
+    tab: Tab,
+    shopGridList: ShopGridList,
+    bottomLoadMore: BottomLoadMore,
+    placeholder: Placeholder
+  }
+
+  data = {
+    list: [],
+    purchasetype: 2,
+    currentTab: 0,
+    winHeight: 0,
+    tabList: ['快速补货', '申请记录', '待补货'],
+    is_empty: false,
+    currentPage: 1,
+    page_total: 0,
+    showLoading: true,
+    preventRepeatRequest: false
+  }
+
+  async getMyOrderGoodsList (currentPage, size) {
+    const userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {}
+    const openId = userSpecialInfo.openid
+    const json = await api.goodsUserOrderList({
+      query: {
+        page: currentPage || 1,
+        size: size || 4,
+        openId: openId,
+        type: 'finish',
+        doType: this.currentTab
+      }
+    })
+
+    console.log(json)
+
+    if (json.data.code === '0') {
+      this.list = [...this.list, ...json.data.list]
+      this.page_total = json.data.page_total
+      if (json.data.page_total === 0) {
+        this.is_empty = true
+      }
+    } else {
+      tip.error(json.data.msg)
+    }
+    this.showLoading = true
+    this.$apply()
+  }
+
+  onLoad () {
+    this.list = []
+    const systemInfo = wx.getStorageSync(SYSTEM_INFO)
+    this.winHeight = systemInfo.windowHeight
+    this.is_empty = false
+    this.getMyOrderGoodsList()
+  }
+
+  methods = {
+    getCurrentTab (cur, evt) {
+      this.currentTab = cur
+      this.$apply()
+    },
+
+    bindChange (e) {
+      this.currentTab = e.detail.current
+      this.list = []
+      this.currentPage = 1
+      this.page_total = 0
+      this.is_empty = false
+      this.getMyOrderGoodsList()
+      this.$apply()
+    }
+  }
+
+  onReachBottom () {
+    const that = this
+    that.showLoading = true
+    if (that.page_total > that.currentPage) {
+      if (that.preventRepeatRequest) {
+        return true
+      }
+      that.preventRepeatRequest = true
+      that.currentPage++
+      that.getMyOrderGoodsList(that.currentPage)
+      that.preventRepeatRequest = false
+    } else {
+      that.showLoading = true
+    }
+  }
+}
+</script>
+
+<style lang="less">
+  .tab_box {
+    padding: 0 60rpx;
+    background: #fff;
+  }
+</style>

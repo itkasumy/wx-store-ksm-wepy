@@ -28,7 +28,9 @@ export default class extends wepy.app {
       'pages/info',
       'pages/search',
       'pages/sign_in',
-      'pages/exchange_goods'
+      'pages/exchange_goods',
+      'pages/wholesale',
+      'pages/replenishment_goods'
     ],
     window: {
       backgroundTextStyle: 'dark',
