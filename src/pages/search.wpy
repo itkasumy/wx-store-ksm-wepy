@@ -70,7 +70,7 @@ export default class Search extends wepy.page {
 
   async getKeyWordHisList () {
     const userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {}
-    const openId = userSpecialInfo.openId
+    const openId = userSpecialInfo.openid
     const json = await api.searchKeywordList({
       query: {
         openId: openId
@@ -138,7 +138,7 @@ export default class Search extends wepy.page {
 
     if (keyword.length > 0) {
       const userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {}
-      const openId = userSpecialInfo.openId
+      const openId = userSpecialInfo.openid
       const resJson = await api.addSearchKeyword({
         query: {
           openId: openId,
@@ -151,7 +151,7 @@ export default class Search extends wepy.page {
 
   async clearUserKeywords () {
     const userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {}
-    const openId = userSpecialInfo.openId
+    const openId = userSpecialInfo.openid
     const json = await api.clearSearchKeyword({
       query: {
         openId: openId

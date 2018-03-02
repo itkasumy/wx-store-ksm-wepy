@@ -1,0 +1,260 @@
+<template>
+  <view class="sign_in">
+    <image src="../images/bc_qdyl.png" class="head_bc"></image>
+
+    <view class="qd_content">
+      <view class="jf">积分:{{score}}</view>
+      <view class="out_crl">
+        <view class="second_crl" @tap="sign">
+          <view class="in_crl">
+            <view class="sign_state">
+              <text wx:if="{{signed}}">已签到</text>
+              <text wx:if="{{!signed}}">签到</text>
+            </view>
+            <view class="line"></view>
+            <text class="sign_times">连续{{conDays}}天</text>
+          </view>
+        </view>
+      </view>
+      <view class="sign_doc" wx:if="{{signed}}">今日已签到，获得10积分</view>
+      <view class="sign_doc" wx:if="{{!signed}}">今日还未签到</view>
+    </view>
+
+    <view class="line-box">
+      <wepySignTime></wepySignTime>
+    </view>
+
+    <view class="tab_box">
+      <tab @currentTab.user="getCurrentTab" :currentTab.sync="currentTab" :tabList.sync="tabList"></tab>
+    </view>
+  </view>
+
+  <scroll-view scroll-y="true" class="swiper-item-box" style="height: {{winHeight - 275}}rpx">
+    <pointsRule wx:if="{{currentTab === 0}}"></pointsRule>
+    <pointsDetail :is_empty.sync="is_empty" :list.sync="signList" wx:if="{{currentTab === 1}}"></pointsDetail>
+  </scroll-view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import api from '../api'
+import Tab from '../components/tab'
+import tip from '../utils/tip'
+import { SYSTEM_INFO, USER_SPECICAL_INFO } from '../utils/constant'
+import PointsDetail from '../components/points_detail'
+import PointsRule from '../components/points_rule'
+import WepySignTime from '../components/common/wepy-sign-time'
+
+export default class SignIn extends wepy.page {
+  config = {
+    navigationBarTitleText: '签到有礼'
+  }
+
+  components = {
+    tab: Tab,
+    pointsDetail: PointsDetail,
+    pointsRule: PointsRule,
+    wepySignTime: WepySignTime
+  }
+
+  data = {
+    currentTab: 0,
+    winHeight: 0,
+    tabList: ['积分规则', '获得记录'],
+    signed: false,
+    score: 0,
+    conDays: 0,
+    signList: [],
+    is_empty: false,
+    signing: false
+  }
+
+  async getUserSign () {
+    const that = this
+    const userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {}
+    const openId = userSpecialInfo.openid
+    const json = await api.userSignInfo({
+      query: {
+        openId: openId
+      }
+    })
+
+    // console.log(json)
+
+    if (json.data.code === '0') {
+      that.signed = json.data.hasSign
+      that.conDays = json.data.conDays
+      that.signList = json.data.list
+      that.score = json.data.score
+      that.$apply()
+    } else {
+      tip.error(json.data.msg)
+    }
+    that.showLoading()
+  }
+
+  async doSign () {
+    const that = this
+    if (that.signed) {
+      return
+    }
+    that.signing = true
+    const userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {}
+    const openId = userSpecialInfo.openid
+    console.log(openId)
+    const json = await api.doSign({
+      query: {
+        openId: openId
+      }
+    })
+
+    console.log(json)
+
+    if (json.data.code === '0') {
+      tip.success('恭喜获得10积分！', 3000)
+      that.signed = true
+      that.conDays = that.conDays + 1
+      that.signing = false
+      this.getUserSign()
+      this.$invoke('wepySignTime', 'refreshList', '')
+      that.$apply()
+    } else {
+      wepy.showToast({
+        title: json.data.msg,
+        images: '../images/error.png',
+        duration: 5000
+      })
+    }
+  }
+
+  onLoad () {
+    const systemInfo = wepy.getStorageSync(SYSTEM_INFO)
+    this.winHeight = systemInfo.winHeight
+    this.getUserSign()
+    this.$apply()
+  }
+
+  methods = {
+    getCurrentTab (cur, evt) {
+      this.currentTab = cur
+      this.$apply()
+    },
+
+    bindChange (e) {
+      this.currentTab = e.detail.current
+      this.$apply()
+    },
+
+    sign () {
+      if (this.signed) {
+        tip.alert('你今天已经签过了！')
+      } else {
+        this.doSign()
+      }
+    }
+  }
+}
+</script>
+
+<style lang="less">
+  .sign {
+    position: relative;
+  }
+
+  .qd_content {
+    position: relative;
+    z-index: 6;
+    height: 460rpx;
+  }
+
+  .head_bc {
+    width: 100%;
+    height: 460rpx;
+    position: absolute;
+  }
+
+  .jf {
+    padding: 50rpx 0 10rpx 35rpx;
+    font-size: 32rpx;
+    color: #ffffff;
+  }
+
+  .in_crl {
+    position: absolute;
+    width: 200rpx;
+    height: 200rpx;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    background: #ffffff;
+    border-radius: 100rpx;
+    border: 1px solid #7fbcff;
+    color: #007aff;
+    z-index: 100;
+    text-align: center;
+  }
+
+  .second_crl {
+    position: relative;
+    width: 235rpx;
+    height: 235rpx;
+    margin: 0 auto;
+    border-radius: 1000rpx;
+    top: 15rpx;
+    background: #ffffff;
+    z-index: 3;
+  }
+
+  .out_crl {
+    position: relative;
+    width: 265rpx;
+    height: 265rpx;
+    margin: 0 auto;
+    border-radius: 1000rpx;
+    background: #ff4400;
+    background-color: rgba(255, 255, 255, .2);
+    z-index: 2;
+  }
+
+  .sign_state {
+    display: block;
+    margin-top: 50rpx;
+    margin-bottom: 15rpx;
+    font-size: 40rpx;
+    font-weight: 600;
+  }
+
+  .line {
+    width: 165rpx;
+    height: 2rpx;
+    background: #dcdcdc;
+    margin: 0 auto;
+  }
+
+  .sign_times {
+    display: block;
+    margin-top: 15rpx;
+    font-size: 30rpx;
+  }
+
+  .sign_doc {
+    margin-top: 30rpx;
+    color: #ffffff;
+    text-align: center;
+    font-size: 30rpx;
+  }
+
+  .tab_box {
+    background: #ffffff;
+    padding: 0 120rpx;
+  }
+
+  .line-box {
+    position: relative;
+    height: 100rpx;
+    background: #ffffff;
+    margin-bottom: 10rpx;
+  }
+</style>

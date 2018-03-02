@@ -70,6 +70,13 @@ const searchKeywordList = params => wxRequest(params, apiMall + '/api/searchkeyw
 // 查询关键字清除
 const clearSearchKeyword = params => wxRequest(params, apiMall + '/api/searchkeyword/clear')
 
+// 用户的当天签到信息
+const userSignInfo = params => wxRequest(params, apiMall + '/api/userSign/signInfo')
+const doSign = params => wxRequest(params, apiMall + '/api/userSign/doSign')
+
+// 获取最近7天的签到情况
+const getSignDate = params => wxRequest(params, apiMall + '/api/userSign/getSignDate')
+
 /**
  * 商品分类 --- start
  */
@@ -109,5 +116,8 @@ module.exports = {
   getGoodsList,
   addSearchKeyword,
   searchKeywordList,
-  clearSearchKeyword
+  clearSearchKeyword,
+  userSignInfo,
+  doSign,
+  getSignDate
 }

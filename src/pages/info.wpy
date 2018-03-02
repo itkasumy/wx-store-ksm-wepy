@@ -99,7 +99,7 @@ export default class Index extends wepy.page {
 
   async getUserInfo (phone, code) {
     const userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {}
-    const openId = userSpecialInfo.openId
+    const openId = userSpecialInfo.openid
     const json = await api.getUserInfo({
       query: {
         openId: openId

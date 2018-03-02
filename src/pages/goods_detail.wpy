@@ -322,7 +322,7 @@ export default class goodsDetail extends wepy.page {
   async addUserBrower () {
     const that = this
     const userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {}
-    const openId = userSpecialInfo.openId
+    const openId = userSpecialInfo.openid
     const json = await api.addBrowser({
       query: {
         goodsId: that.goodsId,
@@ -336,7 +336,7 @@ export default class goodsDetail extends wepy.page {
   async doTakeCart () {
     const that = this
     const userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {}
-    const openId = userSpecialInfo.openId
+    const openId = userSpecialInfo.openid
     const json = await api.addCart({
       query: {
         openId: openId,
@@ -374,7 +374,7 @@ export default class goodsDetail extends wepy.page {
   async doTakeOrder () {
     const that = this
     const userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {}
-    const openId = userSpecialInfo.openId
+    const openId = userSpecialInfo.openid
     const json = await api.addCart({
       query: {
         openId: openId,
@@ -429,7 +429,7 @@ export default class goodsDetail extends wepy.page {
   async goodsIsFavorite () {
     const that = this
     const userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {}
-    const openId = userSpecialInfo.openId
+    const openId = userSpecialInfo.openid
     const json = await api.goodsIsFavorite({
       query: {
         openId: openId,
@@ -460,7 +460,7 @@ export default class goodsDetail extends wepy.page {
   async goodsFavorite () {
     const that = this
     const userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {}
-    const openId = userSpecialInfo.openId
+    const openId = userSpecialInfo.openid
     const json = await api.goodsFavorite({
       query: {
         openId: openId,
@@ -483,7 +483,7 @@ export default class goodsDetail extends wepy.page {
   async goodsUnFavorite () {
     const that = this
     const userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {}
-    const openId = userSpecialInfo.openId
+    const openId = userSpecialInfo.openid
     const json = await api.goodsUnFavorite({
       query: {
         openId: openId,
