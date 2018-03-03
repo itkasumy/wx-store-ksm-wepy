@@ -1,0 +1,157 @@
+<template>
+  <form bindsubmit="formSubmit">
+    <view class="section">
+      <view class="section_title">手机号</view>
+      <input type="number" placeholder="请输入手机号码" maxlength="11" focus="true" bindinput="phoneInput" name="phone"></input>
+    </view>
+
+    <view class="section">
+      <view class="section_title">验证码</view>
+      <input type="number" class="code" name="code" placeholder="请输入验证码" />
+      <view class="btn send_code">
+        <text wx:if="{{sendMsgDisabled}}">{{time}}秒后读取</text>
+        <text @tap="sendCode" wx:else="{{sendMsgDisabled}}">发送验证码</text>
+      </view>
+    </view>
+
+    <view class="btn_comfire"><button class="button type_yellow" fromType="submit">完成</button></view>
+  </form>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import api from '../api'
+  import tip from '../utils/tip'
+  import { USER_SPECICAL_INFO } from '../utils/constant'
+
+  export default class Register extends wepy.page {
+    config = {
+      navigationBarTitleText: '绑定手机'
+    }
+
+    data = {
+      phone: '',
+      sendMsgDisabled: false,
+      time: 60
+    }
+
+    async sendVerifyCode () {
+      const json = await api.sendRandCode({
+        query: {
+          phone: this.phone
+        }
+      })
+
+      // console.log(json)
+
+      if (this.json.code === '0') {
+        tip.success('发送成功!')
+        this.$apply()
+      } else {
+        top.error(json.data.msg)
+      }
+    }
+
+    async registerUser (phone, code) {
+      const that = this
+      const userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {}
+      const openId = userSpecialInfo.openid
+      const json = await api.registerUser({
+        query: {
+          openId: openId,
+          mobile: phone,
+          verificationCode: code
+        }
+      })
+
+      console.log(json)
+
+      if (json.data.code === '0') {
+        wepy.navigateBack()
+        that.$apply()
+      } else {
+        tip.error(json.data.msg)
+      }
+
+      this.showLoading = false
+    }
+
+    methods = {
+      phoneInput (e) {
+        this.phone = e.detail.value
+      },
+
+      sendCode (e) {
+        if (this.phone === '') {
+          tip.alert('输入手机号码')
+          return false
+        }
+
+        this.sendVerifyCode()
+
+        const that = this
+
+        this.sendMsgDisabled = true
+
+        let interval = setInterval(() => {
+          if (that.time-- <= 0) {
+            that.time = 10
+            that.sendMsgDisabled = false
+            clearInterval(interval)
+            that.$apply()
+          }
+          that.$apply()
+        }, 1000)
+      },
+
+      formSubmit (e) {
+        const that = this
+        const phone = e.detail.value.phone
+        const code = e.detail.value.code
+        if (phone === '') {
+          tip.alert('输入手机号码')
+          return false
+        }
+        if (code === '') {
+          tip.alert('输入验证码')
+          return false
+        }
+        that.registerUser(phone, code)
+      }
+    }
+  }
+</script>
+
+<style lang="less">
+  .section {
+    display: flex;
+    align-items: center;
+    padding: 20rpx 30rpx;
+    border-bottom: 1px solid #dbdbdb;
+    background: #ffffff;
+    .section_title {
+      color: #1a1a1a;
+      padding-right: 75rpx;
+    }
+    .btn {
+      padding: 15rpx 10rpx;
+      border: 1px solid #000;
+      border-radius: 5rpx;
+      -moz-border-radius: 5rpx;
+      -webkit-border-radius: 5rpx;
+      color: #000;
+    }
+    .send_code {
+      margin-left: 40rpx;
+    }
+  }
+
+  .btn_comfire {
+    margin-top: 64rpx;
+    padding: 0 24rpx;
+  }
+
+  .code {
+    width: 300rpx;
+  }
+</style>

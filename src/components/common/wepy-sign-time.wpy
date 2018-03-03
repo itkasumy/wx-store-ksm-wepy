@@ -20,7 +20,7 @@
 <script>
 import wepy from 'wepy'
 import tip from '../../utils/tip'
-import { SYSTEM_INFO, USER_SPECICAL_INFO } from '../../utils/constant'
+import { USER_SPECICAL_INFO } from '../../utils/constant'
 import api from '../../api'
 
 export default class WepySignTime extends wepy.component {

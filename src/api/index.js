@@ -80,6 +80,11 @@ const getSignDate = params => wxRequest(params, apiMall + '/api/userSign/getSign
 // 查询用户的已订购产品
 const goodsUserOrderList = params => wxRequest(params, apiMall + '/api/mall/goodsOrder/goodsUserOrderList')
 
+const registerUser = params => wxRequest(params, apiMall + '/api/userCenter/register')
+
+// 发送短信
+const sendRandCode = params => wxRequest(params, apiMall + '/api/sms/send')
+
 /**
  * 商品分类 --- start
  */
@@ -123,5 +128,7 @@ module.exports = {
   userSignInfo,
   doSign,
   getSignDate,
-  goodsUserOrderList
+  goodsUserOrderList,
+  registerUser,
+  sendRandCode
 }
