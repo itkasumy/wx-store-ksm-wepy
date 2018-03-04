@@ -14,7 +14,7 @@
       </view>
     </view>
 
-    <view class="btn_comfire"><button class="button type_yellow" fromType="submit">完成</button></view>
+    <view class="btn_comfire"><button class="button type_yellow" formType="submit">完成</button></view>
   </form>
 </template>
 
@@ -42,13 +42,13 @@
         }
       })
 
-      // console.log(json)
+      console.log(json)
 
-      if (this.json.code === '0') {
+      if (json.data.code === '0') {
         tip.success('发送成功!')
         this.$apply()
       } else {
-        top.error(json.data.msg)
+        tip.error(json.data.msg)
       }
     }
 
@@ -56,6 +56,7 @@
       const that = this
       const userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {}
       const openId = userSpecialInfo.openid
+      console.log(openId)
       const json = await api.registerUser({
         query: {
           openId: openId,

@@ -269,7 +269,7 @@ export default class goodsDetail extends wepy.page {
     this.animation = animation
   }
 
-  wxParseImgTap (e) {
+  wxParseImgLoad (e) {
     const that = this
     const nowImgUrl = e.target.dataset.src
     const tagFrom = e.target.dataset.from

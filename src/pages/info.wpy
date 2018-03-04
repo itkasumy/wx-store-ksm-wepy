@@ -1,7 +1,7 @@
 <template>
   <view class="info">
     <view class="header">
-      <view class="header-content">
+      <view class="header_content">
         <image class="avatarUrl" src="{{avatarUrl}}"></image>
         <view class="nickName cfff">{{nickName}}</view>
       </view>
@@ -98,7 +98,8 @@ export default class Index extends wepy.page {
   }
 
   async getUserInfo (phone, code) {
-    const userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {}
+    const userSpecialInfo = await wepy.getStorageSync(USER_SPECICAL_INFO) || {}
+    console.log(userSpecialInfo)
     const openId = userSpecialInfo.openid
     const json = await api.getUserInfo({
       query: {
@@ -109,7 +110,7 @@ export default class Index extends wepy.page {
     console.log(json)
 
     if (json.data.code === 0) {
-      if (json.data.user.mobile.length > 0) {
+      if (json.data.user.mobile) {
         this.bShowBind = false
       } else {
         this.bShowBind = true
@@ -121,7 +122,7 @@ export default class Index extends wepy.page {
     this.showLoading = false
   }
 
-  onLoad () {
+  async onLoad () {
     let userInfo = wepy.getStorageSync(USER_INFO)
     this.avatarUrl = userInfo.avatarUrl
     this.nickName = userInfo.nickName

@@ -32,6 +32,7 @@ export default class extends wepy.app {
       'pages/wholesale',
       'pages/replenishment_goods',
       'pages/register'
+      // 'pages/order'
     ],
     window: {
       backgroundTextStyle: 'dark',
@@ -86,7 +87,7 @@ export default class extends wepy.app {
     this.use('promisify')
   }
 
-  onLaunch() {
+  async onLaunch () {
     // this.testAsync()
     // const that = this
     // 用户信息
@@ -96,15 +97,18 @@ export default class extends wepy.app {
 
     // 如果信息过期
     if ((!userSpecialInfo.openid || (userSpecialInfo.expires_in || Date.now()) < (Date.now() + 600)) && !userInfo.nickName) {
-      let res = wepy.login()
+      let res = await wepy.login()
+      // console.log(res)
       if (res.code) {
         // let d = that.globalData // 这里存储了 appid secret token
         // 存储 userInfo
-        let c = wepy.getUserInfo()
+        let c = await wepy.getUserInfo()
+        console.log(c)
         wepy.setStorageSync(USER_INFO, c.userInfo)
 
         // 存储系统信息
-        let systemInfo = wepy.getSystemInfoSync()
+        let systemInfo = await wepy.getSystemInfoSync()
+        // console.log(systemInfo)
         wepy.setStorageSync(SYSTEM_INFO, systemInfo)
 
         wxJsCode2Session({
@@ -114,7 +118,8 @@ export default class extends wepy.app {
           }
         }).then(resp => {
           const rlt = resp.data
-          console.log('wxJsCode2Session...', JSON.stringfy(rlt))
+          console.log(rlt)
+          // console.log('wxJsCode2Session...', JSON.stringify(rlt))
           if (rlt.result) {
             const data = rlt.data
             if (data.openid) {
@@ -126,7 +131,7 @@ export default class extends wepy.app {
             }
           } else {
             const obj = {}
-            obj.openid = ''
+            obj.openid = 'o5gAf5Q1Ki26d2zHaLRyt1_hIBAE'
             obj.expires_in = '7200'
             // 存储 openid
             wepy.setStorageSync(USER_SPECICAL_INFO, obj)
@@ -134,6 +139,31 @@ export default class extends wepy.app {
         })
 
         // let url = 'https://api.weixin.qq.com/sns/jscode2session?appid=' + d.appid + '&secret=' + d.secret + '&js_code=' + res.code + '&grant_type=authorization_code'
+
+        // const b = await wepy.request({
+        //   url: url,
+        //   data: {},
+        //   method: 'POST',
+        //   header: {
+        //     'Content-Type': 'application/x-www-form-urlencoded'
+        //   }
+        // })
+
+        // if (b.data.openid) {
+        //   let obj = {}
+        //   obj.openid = b.data.openid
+        //   obj.expires_in = Date.now() + b.data.expires_in
+
+        //   wepy.setStorageSync(USER_SPECICAL_INFO, obj)
+
+        //   let e = await wepy.getUserInfo()
+        //   wepy.setStorageSync(USER_SPECICAL_INFO, e.userInfo)
+
+        //   let systemInfo = await wepy.getSystemInfoSync()
+        //   wepy.setStorageSync(SYSTEM_INFO, systemInfo)
+
+        //   console.log('success')
+        // }
       } else {
         console.log('获取用户登录状态失败！' + res.errMsg)
       }
