@@ -30,7 +30,7 @@
 import wepy from 'wepy'
 import api from '../api'
 import tip from '../utils/tip'
-import { SYSTEM_INFO, USER_SPECICAL_INFO } from '../utils/constant'
+import { USER_SPECICAL_INFO } from '../utils/constant'
 import Searchs from '../components/search'
 import FilterBar from '../components/filter_bar'
 import ShopGripList from '../components/shop_grid_list'
@@ -145,7 +145,7 @@ export default class Search extends wepy.page {
           keyword: keyword
         }
       })
-      console.log(json)
+      console.log(resJson)
     }
   }
 
@@ -157,7 +157,7 @@ export default class Search extends wepy.page {
         openId: openId
       }
     })
-    
+
     // console.log(json)
 
     if (json.data.code === '0') {

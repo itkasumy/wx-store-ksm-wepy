@@ -85,6 +85,18 @@ const registerUser = params => wxRequest(params, apiMall + '/api/userCenter/regi
 // 发送短信
 const sendRandCode = params => wxRequest(params, apiMall + '/api/sms/send')
 
+// 查询我的订单
+const getMyOrderList = params => wxRequest(params, apiMall + '/api/mall/goodsOrder/getMyOrderList')
+
+// 查询我的订单数量
+const getMyOrderSize = params => wxRequest(params, apiMall + '/api/mall/goodsOrder/getMyOrderSize')
+
+// 根据订单号查询详情
+const editOrderInfo = params => wxRequest(params, apiMall + '/api/mall/goodsOrder/opt')
+
+// 退货操作
+const refundApply = params => wxRequest(params, apiMall + '/api/mall/refund/saveRefundApply')
+
 /**
  * 商品分类 --- start
  */
@@ -99,6 +111,8 @@ const childGoodsCatetoryList = params => wxRequest(params, apiMall + '/api/mall/
 
 // 查询广告列表
 const getAdList = params => wxRequest(params, apiMall + '/api/adverts/list')
+
+const toPay = params => wxRequest(params, apiMall + '/wepay/toPay')
 
 module.exports = {
   getDiscoverList,
@@ -130,5 +144,10 @@ module.exports = {
   getSignDate,
   goodsUserOrderList,
   registerUser,
-  sendRandCode
+  sendRandCode,
+  getMyOrderList,
+  getMyOrderSize,
+  editOrderInfo,
+  toPay,
+  refundApply
 }

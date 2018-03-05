@@ -1,0 +1,188 @@
+<template>
+  <repeat for="{{list}}" key="index" index="index" item="item">
+    <view class="goods_list">
+      <view class="image_box">
+        <image src="{{item.goodsThumLogo}}"></image>
+      </view>
+
+      <view class="goods">
+        <view class="product_name">{{item.goodsName}}</view>
+        <view class="product_rule">规格:{{item.goodsSkuVals}}</view>
+        <view class="product_info">
+          <view class="price">￥{{item.price}}</view>
+          <view class="goods_num">x{{item.num}}</view>
+        </view>
+
+        <view class="order_footer">
+          <view class="btn_footer">
+            <view class="btn_group">
+              <view class="btn btn_del" @tap.stop="refund" data-id="{{item.id}}" wx:if="{{item.status === 4 && item.refundStatus === 0}}">申请退货</view>
+            </view>
+            <view class="order_state" wx:if="{{item.refundStatus === 1}}">
+              <view>退货中</view>
+            </view>
+            <view class="order_state" wx:if="{{item.refundStatus === 2}}">
+              <view>退款成功</view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </repeat>
+</template>
+
+<script>
+import wepy from 'wepy'
+import tip from '../utils/tip'
+import api from '../api'
+import { USER_SPECICAL_INFO } from '../utils/constant'
+
+export default class ShopItemList extends wepy.component {
+  props = {
+    goodsList: {
+      default: []
+    },
+    list: []
+  }
+
+  async applyRefund (itemId) {
+    const userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {}
+    const openId = userSpecialInfo.openid
+    const json = await api.refundApply({
+      query: {
+        openId: openId,
+        orderItemId: itemId
+      }
+    })
+
+    // console.log(json)
+
+    if (json.data.code === 0) {
+      wx.showModal({
+        title: '提示',
+        content: '你的退货申请已提交，等待审批！',
+        showCancel: false,
+        success: res => {
+          if (res.confirm) {
+            console.log('1234')
+          } else if (res.cancel) {
+            console.log('5678')
+          }
+        }
+      })
+    } else {
+      tip.error(json.data.msg)
+    }
+  }
+
+  methods = {
+    refreshList (val) {
+      if (val === undefined) {
+        return
+      }
+      this.list = val
+      this.$apply()
+    },
+
+    refund (e) {
+      const itemId = e.currentTarget.dataset.id
+      const that = this
+      wx.showModal({
+        title: '提示',
+        content: '确定要退货吗？',
+        success: res => {
+          if (res.confirm) {
+            that.applyRefund(itemId)
+          } else if (res.cancel) {
+            console.log('用户点击取消')
+          }
+        }
+      })
+    }
+  }
+
+  onLoad () {
+    this.list = []
+  }
+}
+</script>
+
+<style lang="less">
+  .goods_list {
+    display: flex;
+    justify-content: space-between;
+    padding: 20rpx 0;
+    border-bottom: 1px solid #efefef;
+  }
+  .image_box {
+    image {
+      width: 180rpx;
+      height: 180rpx;
+    }
+  }
+
+  .product_name {
+    color: #414141;
+    font-size: 32rpx;
+    overflow: hidden;
+    display: -webkit-box; // learning
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    word-wrap: break-all;
+  }
+
+  .product_rule {
+    font-size: 26rpx;
+    color: #757575;
+    padding-top: 16rpx;
+  }
+
+  .price {
+    color: #de0000;
+    font-size: 34rpx;
+    font-weight: 600;
+  }
+
+  .goods {
+    padding: 15rpx 12rpx;
+    .order_footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 20rpx;
+    }
+    .order_state {
+      color: #ff4856;
+      font-size: 32rpx;
+    }
+    .btn_group {
+      display: flex;
+      align-items: right;
+      .btn {
+        font-size: 25rpx;
+        padding: 1rpx;
+        text-align: center;
+        margin: 0 auto;
+        width: 100%;
+        -moz-border-radius: 15rpx;
+        -webkit-border-radius: 15rpx;
+        border-radius: 15rpx;
+      }
+      .btn_del {
+        color: #333333;
+        border: 1px solid #cccccc;
+      }
+    }
+  }
+
+  .product_info {
+    padding-top: 20rpx;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+
+  .cost_price {
+    padding-left: 20rpx;
+  }
+</style>
