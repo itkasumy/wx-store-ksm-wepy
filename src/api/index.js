@@ -100,6 +100,15 @@ const refundApply = params => wxRequest(params, apiMall + '/api/mall/refund/save
 // 用户积分信息
 const pointInfo = params => wxRequest(params, apiMall + '/api/userPoint/pointInfo')
 
+// 用户足迹信息
+const browseInfo = params => wxRequest(params, apiMall + '/api/userBrowse/browseInfo')
+
+// 用户收藏的商品
+const favoriteInfo = params => wxRequest(params, apiMall + '/api/goodsFavorite/favoriteInfo')
+
+// 删除用户足迹
+const delUserBrowse = params => wxRequest(params, apiMall + '/api/userBrowse/delete')
+
 /**
  * 商品分类 --- start
  */
@@ -153,5 +162,8 @@ module.exports = {
   editOrderInfo,
   toPay,
   refundApply,
-  pointInfo
+  pointInfo,
+  browseInfo,
+  favoriteInfo,
+  delUserBrowse
 }

@@ -1,0 +1,178 @@
+<template>
+  <view class="collection">
+    <view class="tab_box">
+      <tab @currentTab.user="getCurrentTab" :currentTab.sync="currentTab" :tabList.sync="tabList"></tab>
+    </view>
+
+    <scroll-view scroll-y="true" bindscrolltolower="onReachBottom" class="swiper-item-box" style="height: {{winHeight - 31}}rpx">
+      <!-- 我的足迹 -->
+      <collectionList :list.sync="browselist" wx:if="{{currentTab === 0}}"></collectionList>
+      <!-- 我的收藏 -->
+      <collectionList :list.sync="favorlist" wx:if="{{currentTab === 1}}"></collectionList>
+    </scroll-view>
+    <bottomLoadMore :show.sync="showLoading" message="正在加载"></bottomLoadMore>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import tip from '../utils/tip'
+import Tab from '../components/tab'
+import CollectionList from '../components/collection_list'
+import BottomLoadMore from '../components/common/bottomLoadMore'
+import api from '../api'
+import { SYSTEM_INFO, USER_SPECICAL_INFO } from '../utils/constant'
+
+export default class Collection extends wepy.page {
+  config = {
+    navigationBarTitleText: ''
+  }
+
+  components = {
+    tab: Tab,
+    collectionList: CollectionList,
+    bottomLoadMore: BottomLoadMore
+  }
+
+  data = {
+    browselist: [],
+    favorlist: [],
+    tabList: ['我的足迹', '我的收藏'],
+    currentTab: 0,
+    winHeight: 0,
+    currentPage: 1,
+    page_total: 0,
+    showLoading: true,
+    preventRepeatRequest: false
+  }
+
+  async getUserBrowse (currentPage, size) {
+    const that = this
+    const userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {}
+    const openId = userSpecialInfo.openid
+    const json = await api.browseInfo({
+      query: {
+        openId: openId,
+        page: currentPage || 1,
+        size: size || 10
+      }
+    })
+
+    // console.log(json)
+
+    if (json.data.code === '0') {
+      that.browselist = [...that.browselist, ...json.data.list]
+      that.page_total = json.data.page_total
+      that.$apply()
+      that.$invoke('collectionList', 'refreshList', that.browselist)
+    } else {
+      // tip.error(json.data.msg)
+      tip.error('1234')
+    }
+
+    that.showLoading = false
+  }
+
+  async getUserFavorite (currentPage, size) {
+    const that = this
+    const userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {}
+    const openId = userSpecialInfo.openid
+    const json = await api.favoriteInfo({
+      query: {
+        openId: openId,
+        page: currentPage || 1,
+        size: size || 10
+      }
+    })
+
+    // console.log(json)
+
+    if (json.data.code === '0') {
+      that.browselist = [...that.favorlist, ...json.data.list]
+      that.page_total = json.data.page_total
+      that.$invoke('collectionList', 'refreshList', that.favorlist)
+      that.$apply()
+    } else {
+      // tip.error(json.data.msg)
+      tip.error('1234')
+    }
+
+    that.showLoading = false
+  }
+
+  onLoad (opts) {
+    this.browselist = {}
+    this.favorlist = {}
+    this.currentTab = opts.type
+    if (opts.type === 0) {
+      this.getUserBrowse()
+    } else {
+      this.getUserFavorite()
+    }
+
+    this.setTitle(opts.type)
+
+    const systemInfo = wepy.getStorageSync(SYSTEM_INFO)
+    this.winHeight = systemInfo.windowHeight
+    this.$apply()
+  }
+
+  methods = {
+    getCurrentTab (cur, evt) {
+      this.currentPage = 1
+      this.page_total = 0
+      this.currentTab = cur
+      this.setTitle(cur)
+      const that = this
+
+      if (cur === 1) {
+        that.getUserFavorite()
+        that.favorlist = {}
+      } else {
+        that.getUserBrowse()
+        that.browselist = {}
+      }
+      this.$apply()
+    },
+
+    bindChange (e) {
+      this.currentTab = e.detail.current
+      this.$apply()
+    }
+  }
+
+  setTitle (cur) {
+    wepy.setNavigationBarTitle({
+      title: this.tabList[cur]
+    })
+  }
+
+  onReachBottom () {
+    const that = this
+    this.showLoading = true
+    if (this.page_total > this.currnetPage) {
+      if (that.preventRepeatRequest) {
+        return true
+      }
+
+      that.preventRepeatRequest = true
+      that.currentPage++
+      if (this.currentTab === 0) {
+        that.getUserBrowse(that.currentPage)
+      } else {
+        that.getUserFavorite(that.currentPage)
+      }
+      that.preventRepeatRequest = false
+    } else {
+      that.showLoading = false
+    }
+  }
+}
+</script>
+
+<style lang="less">
+  .tab_box {
+    background: #ffffff;
+    padding: 0 120rpx;
+  }
+</style>
