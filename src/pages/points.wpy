@@ -85,20 +85,20 @@ export default class Points extends wepy.page {
     this.avatarUrl = userInfo.avatarUrl
     this.nickName = userInfo.nickName
     this.winHeight = systemInfo.windowHeight
-    
+
     this.getUserPoint()
     this.$apply()
   }
 
   methods = {
     more () {
-      wepy.navigeteTo({
+      wepy.navigateTo({
         url: '/pages/points_more'
       })
     },
 
     jfRule () {
-      wepy.navigeteTo({
+      wepy.navigateTo({
         url: '/pages/points_rule'
       })
     }
@@ -189,7 +189,7 @@ export default class Points extends wepy.page {
       color: #a3a3a3;
       font-size: 24rpx;
       line-height: 76rpx;
-      margin: 30rpx ;
+      margin: 30rpx 0;
     }
   }
 </style>

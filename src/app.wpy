@@ -34,7 +34,8 @@ export default class extends wepy.app {
       'pages/register',
       'pages/order',
       'pages/reorder',
-      'pages/points'
+      'pages/points',
+      'pages/points_rule'
     ],
     window: {
       backgroundTextStyle: 'dark',

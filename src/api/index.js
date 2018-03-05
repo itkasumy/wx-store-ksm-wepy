@@ -97,6 +97,9 @@ const editOrderInfo = params => wxRequest(params, apiMall + '/api/mall/goodsOrde
 // 退货操作
 const refundApply = params => wxRequest(params, apiMall + '/api/mall/refund/saveRefundApply')
 
+// 用户积分信息
+const pointInfo = params => wxRequest(params, apiMall + '/api/userPoint/pointInfo')
+
 /**
  * 商品分类 --- start
  */
@@ -149,5 +152,6 @@ module.exports = {
   getMyOrderSize,
   editOrderInfo,
   toPay,
-  refundApply
+  refundApply,
+  pointInfo
 }
