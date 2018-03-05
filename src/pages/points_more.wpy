@@ -1,0 +1,92 @@
+<template>
+  <scroll-view scroll-y="true" bindscrolltolower="onReachBottom" style="height: {{winHeight}}rpx" class="swiper-item-box">
+    <pointsDetail :is_empty.sync="{{is_empty}}" :list.sync="list"></pointsDetail>
+    <bottomLoadMore :show.sync="showLoading" message="正在加载"></bottomLoadMore>
+    <placeholder :show.sync="is_empty" message="暂无发现数据"></placeholder>
+  </scroll-view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import PointsDetail from '../components/points_detail'
+import BottomLoadMore from '../components/common/bottomLoadMore'
+import Palceholder from '../components/common/placeholder'
+import tip from '../utils/tip'
+import api from '../api'
+import { SYSTEM_INFO, USER_SPECICAL_INFO } from '../utils/constant'
+
+export default class PointsMore extends wepy.page {
+  config = {
+    navigationBarTitleText: '查看更多'
+  }
+
+  components = {
+    pointsDetail: PointsDetail,
+    bottomLoadMore: BottomLoadMore,
+    placeholder: Palceholder
+  }
+
+  data = {
+    winHeight: 0,
+    list: [],
+    is_empty: false,
+    showLoading: false,
+    currentPage: 1,
+    page_total: 0,
+    preventRepeatRequest: false
+  }
+
+  async getUserPoint (currentPage, size) {
+    const that = this
+    const userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {}
+    const openId = userSpecialInfo.openid
+    const json = await api.pointInfo({
+      query: {
+        openId: openId,
+        page: currentPage || 1,
+        size: size || 10
+      }
+    })
+
+    // console.log(json)
+
+    if (json.data.code === '0') {
+      that.list = [...that.list, ...json.data.list]
+      that.page_total = json.data.page_total
+      that.$apply()
+    } else {
+      // tip.error(json.data.msg)
+      tip.error('1234')
+    }
+    that.showLoading = false
+  }
+
+  onLoad () {
+    this.list = []
+    const systemInfo = wepy.getStorageSync(SYSTEM_INFO)
+    this.winHeight = systemInfo.windowHeight
+    this.getUserPoint()
+    this.$apply()
+  }
+
+  onReachBottom () {
+    const that = this
+    that.showLoading = true
+    if (that.page_total > that.currentPage) {
+      if (that.preventRepeatRequest) {
+        return true
+      }
+      that.preventRepeatRequest = true
+      that.currentPage++
+      that.getUserPoint(that.currentPage)
+      that.preventRepeatRequest = false
+    } else {
+      that.showLoading = false
+    }
+  }
+}
+</script>
+
+<style lang="less">
+
+</style>

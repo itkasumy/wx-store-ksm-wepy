@@ -32,6 +32,7 @@
 <script>
 import wepy from 'wepy'
 import api from '../api'
+import tip from '../utils/tip'
 import PointsDetail from '../components/points_detail'
 import { SYSTEM_INFO, USER_SPECICAL_INFO, USER_INFO } from '../utils/constant'
 
@@ -140,7 +141,7 @@ export default class Points extends wepy.page {
   .jf_header {
     display: flex;
     align-items: center;
-    padding: 70rpx 25rpx;
+    padding: 45rpx 25rpx;
     position: relative;
   }
 
