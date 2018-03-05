@@ -1,0 +1,195 @@
+<template>
+  <view class="points">
+    <image src="../images/bc_qdyl.png" class="head_bc"></image>
+
+    <view class="jf_content">
+      <view class="jf_header">
+        <view class="image_box">
+          <image class="avatarUrl" src="{{avatarUrl}}"></image>
+        </view>
+        <view class="jf_num cfff">
+          <view class="jf_title">我的积分</view>
+          <view class="jf_title mt25">
+            <i class="iconfont icon-jifen"></i>
+            <view class="cfff">{{userPoint}}</view>
+          </view>
+        </view>
+        <view class="btn_jf_rule" @tap="jfRule">积分说明</view>
+      </view>
+    </view>
+
+    <view class="jf_detail">
+      <view class="left">积分明细</view>
+      <view class="right" @tap="more">查看更多</view>
+    </view>
+
+    <scroll-view scroll-y="true" class="swiper-item-box" style="height: {{winHeight - 165}}rpx">
+      <pointsDetail :is_empty.sync="is_empty" :list.sync="list"></pointsDetail>
+    </scroll-view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import api from '../api'
+import PointsDetail from '../components/points_detail'
+import { SYSTEM_INFO, USER_SPECICAL_INFO, USER_INFO } from '../utils/constant'
+
+export default class Points extends wepy.page {
+  config = {
+    navigationBarTitleText: '我的积分'
+  }
+
+  components = {
+    pointsDetail: PointsDetail
+  }
+
+  data = {
+    winHeight: 0,
+    list: [],
+    is_empty: false,
+    avatarUrl: '',
+    nickName: '',
+    userPoint: 0
+  }
+
+  async getUserPoint () {
+    const that = this
+    const userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {}
+    const openId = userSpecialInfo.openid
+    const json = await api.pointInfo({
+      query: {
+        openId: openId,
+        page: '1',
+        size: '10'
+      }
+    })
+
+    // console.log(json)
+
+    if (json.data.code === 0) {
+      that.list = json.data.list
+      that.userPoint = json.data.userPoint
+      that.$apply()
+    } else {
+      // tip.error(json.data.msg)
+      tip.error('json.data.msg')
+    }
+    that.showLoading = false
+  }
+
+  onLoad () {
+    const systemInfo = wepy.getStorageSync(SYSTEM_INFO)
+    const userInfo = wepy.getStorageSync(USER_INFO)
+
+    this.avatarUrl = userInfo.avatarUrl
+    this.nickName = userInfo.nickName
+    this.winHeight = systemInfo.windowHeight
+    
+    this.getUserPoint()
+    this.$apply()
+  }
+
+  methods = {
+    more () {
+      wepy.navigeteTo({
+        url: '/pages/points_more'
+      })
+    },
+
+    jfRule () {
+      wepy.navigeteTo({
+        url: '/pages/points_rule'
+      })
+    }
+  }
+}
+</script>
+
+<style lang="less">
+  .points {
+    position: relative;
+    background: #f2f2f2;
+  }
+
+  .jf_content {
+    position: relative;
+    z-index: 6;
+    height: 250rpx;
+  }
+
+  .head_bc {
+    width: 100%;
+    height: 250rpx;
+    position: absolute;
+  }
+
+  .jf {
+    font-size: 32rpx;
+    color: #ffffff;
+    position: absolute;
+  }
+
+  .avatarUrl {
+    width: 146rpx;
+    height: 146rpx;
+    border-radius: 1000rpx;
+    border: 1px solid #fff;
+  }
+
+  .jf_header {
+    display: flex;
+    align-items: center;
+    padding: 70rpx 25rpx;
+    position: relative;
+  }
+
+  .jf_num {
+    margin-left: 25rpx;
+  }
+
+  .jf_title {
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+  }
+
+  .icon-jifen {
+    margin-right: 10rpx;
+  }
+
+  .mt25 {
+    margin-top: 25rpx;
+  }
+
+  .btn_jf_rule {
+    position: absolute;
+    width: 200rpx;
+    height: 66rpx;
+    line-height: 66rpx;
+    right: -30rpx;
+    background: rgba(255, 255, 255, .8);
+    color: #ed7437;
+    border-radius: 200rpx;
+    text-align: center;
+    padding-right: 10rpx;
+  }
+
+  .jf_detail {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 78rpx;
+    background: #ffffff;
+    padding: 0 52rpx;
+    .left {
+      color: #eb6623;
+    }
+    .right {
+      color: #a3a3a3;
+      font-size: 24rpx;
+      line-height: 76rpx;
+      margin: 30rpx ;
+    }
+  }
+</style>
