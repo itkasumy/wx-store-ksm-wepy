@@ -3,7 +3,7 @@
     <tab @currentTab.user="getCurrentTab" :tabList.sync="tabList" :currentTab.sync="currentTab"></tab>
   </view>
 
-  <scroll-view class="swiper-item-box" scroll-y="true" bindscrolltolower="onReachBottom" style="height: {{winHeight - 31}}rpx">
+  <scroll-view scroll-y="true" bindscrolltolower="onReachBottom" style="height: {{winHeight - 31}}rpx" class="swiper-item-box">
     <orderItem :orderList.sync="orderList"></orderItem>
     <bottomLoadMore :show.sync="showLoading" message="正在加载"></bottomLoadMore>
     <placeholder :show.sync="is_empty" message="暂无发现数据"></placeholder>
@@ -17,12 +17,12 @@ import OrderItem from '../components/order_item'
 import BottomLoadMore from '../components/common/bottomLoadMore'
 import Placeholder from '../components/common/placeholder'
 import tip from '../utils/tip'
-import api from '../api'
 import { SYSTEM_INFO, USER_SPECICAL_INFO } from '../utils/constant'
+import api from '../api'
 
 export default class Order extends wepy.page {
   config = {
-    navigationBarTitleText: '我的订单'
+    navigationBarTittleText: '补货订单'
   }
 
   components = {
@@ -35,7 +35,7 @@ export default class Order extends wepy.page {
   data = {
     winHeight: 0,
     totalCount: 0,
-    tabList: ['全部订单', '待支付', '待收款', '已完成'],
+    tabList: ['全部', '待处理', '待收货', '已完成'],
     orderList: [],
     currentPage: 1,
     is_empty: false,
@@ -46,7 +46,7 @@ export default class Order extends wepy.page {
     preventRepeatRequest: false,
     pendingPayCount: 0,
     backrdersCount: 0,
-    shippedCound: 0,
+    shippedCount: 0,
     receiveFlg: 0
   }
 
@@ -54,14 +54,14 @@ export default class Order extends wepy.page {
     const that = this
     const userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {}
     const openId = userSpecialInfo.openid
-    const json = await api.getMyOrderList({
+    const json = await api.getMyOrderSize({
       query: {
         openId: openId,
         orderStatus: that.orderStatus,
         receiveFlg: that.receiveFlg,
         page: currentPage || 1,
         size: size || 10,
-        type: 1
+        type: 2
       }
     })
 
@@ -89,8 +89,8 @@ export default class Order extends wepy.page {
       tip.error('1234')
     }
 
-    this.showLoading = false
-    this.$apply()
+    that.showLoading = false
+    that.$apply()
   }
 
   async getMyOrderSize () {
@@ -99,21 +99,26 @@ export default class Order extends wepy.page {
     const openId = userSpecialInfo.openid
     const json = await api.getMyOrderSize({
       query: {
-        openId: openId
+        openId: openId,
+        type: 2
       }
     })
 
     // console.log(json)
 
     if (json.data.code === '0') {
-      that.pedingPayCout = json.data.pedingPayCount
+      // 待付款
+      that.pendingPayCount = json.data.pendingPayCount
+      // 待发货
       that.backrdersCount = json.data.backrdersCount
-      that.shippedCound = json.data.shippedCound
+      // 待收货
+      that.shippedCount = json.data.shippedCount
 
+      // 重写list
       const dotList = [
-        '全部订单',
+        '全部',
         {
-          name: '待支付',
+          name: '待处理',
           dotNum: that.pendingPayCount
         },
         {
@@ -122,7 +127,6 @@ export default class Order extends wepy.page {
         },
         '已完成'
       ]
-
       this.$invoke('tab', 'changeList', dotList)
       this.$apply()
     }
@@ -146,16 +150,20 @@ export default class Order extends wepy.page {
       const that = this
 
       if (cur === 0) {
+        // 所有订单类型
         that.orderStatus = ''
         that.getMyOrder()
       } else if (cur === 1) {
+        // 未付款订单类型
         that.orderStatus = 0
         that.getMyOrder()
       } else if (cur === 2) {
+        // 待收货订单类型
         that.orderStatus = 2
         that.receiveFlg = 2
         that.getMyOrder()
       } else if (cur === 3) {
+        // 已完成订单类型
         that.orderStatus = 4
         that.receiveFlg = 4
         that.getMyOrder()
@@ -177,6 +185,7 @@ export default class Order extends wepy.page {
         this.$apply()
         this.orderStatus = 4
       }
+
       this.getMyOrder(1, 10, 1)
     }
   }
@@ -189,27 +198,33 @@ export default class Order extends wepy.page {
 
   onReachBottom () {
     const that = this
-    this.showLoading = true
+
     if (this.page_total > this.currentPage) {
       if (that.preventRepeatRequest) {
-        return true
+        return false
       }
+
       that.preventRepeatRequest = true
       that.currentPage++
 
       if (that.currentTab === 0) {
+        // 所有订单类型
         that.getMyOrder(that.currentPage)
-      } else if (that.currentTab === 1) {
+      } else if (this.currentTab === 1) {
+        // 未付款订单类型
         that.orderStatus = 0
         that.getMyOrder(that.currentPage)
-      } else if (that.currentTab === 2) {
-        that.orderStatus = 2
-        that.receiveFlg = 2
+      } else if (this.currentTab === 2) {
+        // 待发货订单类型
+        that.orderStatus = 1
+        that.receiveFlg = 1
         that.getMyOrder(that.currentPage)
       } else if (that.currentTab === 3) {
+        // 已完成订单类型
         that.orderStatus = 4
         that.getMyOrder(that.currentPage)
       }
+
       that.preventRepeatRequest = false
     } else {
       that.showLoading = false
@@ -222,9 +237,10 @@ export default class Order extends wepy.page {
   .swiper-tab-pd {
     padding: 0 30rpx;
     background: #ffffff;
-    &:active {
-      color: #ff4856;
-      border-bottom: 5rpx solid #ff4856;
-    }
+  }
+
+  .swiper-tab-order.active {
+    color: #ff4856;
+    border-bottom: 5rpx solid #ff4856;
   }
 </style>

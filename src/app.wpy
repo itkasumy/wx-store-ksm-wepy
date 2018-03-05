@@ -32,7 +32,8 @@ export default class extends wepy.app {
       'pages/wholesale',
       'pages/replenishment_goods',
       'pages/register',
-      'pages/order'
+      'pages/order',
+      'pages/reorder'
     ],
     window: {
       backgroundTextStyle: 'dark',
