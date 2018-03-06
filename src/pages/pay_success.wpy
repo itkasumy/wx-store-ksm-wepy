@@ -1,0 +1,150 @@
+<template>
+  <view class="pay_success">
+    <view class="icon">
+      <view><i class="iconfont icon-success"></i></view>
+      <view class="success_doc">恭喜支付成功</view>
+    </view>
+
+    <view class="pay_type">
+      <view class="block">
+        <i class="iconfont icon-paytype"></i>
+        <view class="title fz24">支付方式</view>
+        <view class="type fz24">微信支付</view>
+      </view>
+    </view>
+
+    <view class="pay_money">
+      <view class="block">
+        <i class="iconfont icon-money"></i>
+        <view class="title fz24">支付金额</view>
+        <view class="type fz24">{{totalFee}}</view>
+      </view>
+    </view>
+
+    <view class="pay_btn">
+      <view class="block btn_group">
+        <view class="btn order_detail" @tap="goOrderDetail">查看订单</view>
+        <view class="btn get_store" @tap="goIndex">继续购物</view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import tip from 'tip'
+import api from '../api'
+import { SYSTEM_INFO, USER_SPECICAL_INFO } from '../utils/constant'
+
+export default class paySuccess extends wepy.page {
+  config = {
+    navigationBarTitleText: '支付成功'
+  }
+
+  data = {
+    orderNo: '',
+    totalFee: 0
+  }
+
+  async getPayOrderDetail () {
+    const json = api.getPayOrderDetail({
+      query: {
+        tradeNo: this.orderNo
+      }
+    })
+
+    // console.log(json)
+
+    if (json.data.code === 0) {
+      this.totalFee = json.data.order.totalFee
+    } else {
+      // tip.error(json.data.msg)
+      tip.error('json.data.msg')
+    }
+
+    this.$apply()
+  }
+
+  onLoad (opt) {
+    this.orderNo = opt.orderNo
+    this.getPayOrderDetail()
+  }
+
+  methods = {
+    goOrderDetail () {
+      wepy.redirectTo({
+        url: '/pages/order'
+      })
+    },
+
+    goIndex () {
+      wepy.switchTab({
+        url: '/pages/home'
+      })
+    }
+  }
+}
+</script>
+
+<style lang="less">
+  .pay_success {
+    background: #ffffff;
+    padding-bottom: 50rpx;
+    .pay_btn, .pay_type, .pay_money {
+      display: flex;
+      width: 100%;
+    }
+    .icon {
+      margin: 0 auto;
+      text-align: center;
+      padding-top: 100rpx;
+    }
+    .block {
+      margin: 0 auto;
+      text-align: center;
+      display: flex;
+      align-items: center;
+    }
+    .icon-success {
+      color: #ea4a3a;
+      font-size: 150rpx;
+    }
+    .success_doc {
+      color: #1a1a1a;
+    }
+    .type {
+      color: #ea4a3a;
+      margin-left: 20rpx;
+    }
+    .pay_type {
+      padding-top: 84rpx;
+    }
+    .pay_money {
+      padding-top: 25rpx;
+    }
+    .btn_group {
+      display: flex;
+      align-items: center;
+      padding-top: 100rpx;
+      .btn {
+        width: 100%;
+        padding: 22rpx 55rpx;
+        margin: 0 auto;
+        text-align: center;
+        font-size: 30rpx;
+        -moz-border-radius: 10rpx;
+        -webkit-border-radius: 10rpx;
+        border-radius: 10rpx;
+      }
+      .order_detail {
+        color: #333333;
+        border: 1px solid #ccc;
+      }
+      .get_store {
+        margin-left: 85rpx;
+        background: #ed601b;
+        color: #ffffff;
+      }
+    }
+  }
+</style>
