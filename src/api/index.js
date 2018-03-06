@@ -112,6 +112,18 @@ const delUserBrowse = params => wxRequest(params, apiMall + '/api/userBrowse/del
 // 用户消息
 const messageInfo = params => wxRequest(params, apiMall + '/api/systemMessage/messageInfo')
 
+// 用户收货地址
+const getUserAddress = params => wxRequest(params, apiMall + '/api/receiverInfo/list')
+
+// 根据ID查询用户地址
+const receiverInfoById = params => wxRequest(params, apiMall + '/api/receiverInfo/receiverInfoById')
+
+// 保存用户收货地址
+const saveAddress = params => wxRequest(params, apiMall + '/api/receiverInfo/saveOrUpdate')
+
+// 根据ID删除收货地址
+const delUserAddress = params => wxRequest(params, apiMall + '/api/receiverInfo/operation')
+
 /**
  * 商品分类 --- start
  */
@@ -169,5 +181,9 @@ module.exports = {
   browseInfo,
   favoriteInfo,
   delUserBrowse,
-  messageInfo
+  messageInfo,
+  getUserAddress,
+  receiverInfoById,
+  saveAddress,
+  delUserAddress
 }

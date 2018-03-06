@@ -1,0 +1,120 @@
+<template>
+  <view class="{{currentPage === 0 ? '' : 'hidden'}}">
+    <addressList :list.sync="addressList" @currentPage.user="getCurrentPage"></addressList>
+  </view>
+
+  <view class="{{currentPage === 1 ? '' : 'hidden'}}">
+    <addressAdd @currentPage.user="getCurrentPage"></addressAdd>
+  </view>
+
+  <view class="{{currentPage === 2 ? '' : 'hidden'}}">
+    <addressEdit @currentPage.user="getCurrentPage"></addressEdit>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import tip from '../utils/tip'
+import AddressList from '../components/address_list'
+import AddressAdd from '../components/address_add'
+import AddressEdit from '../components/address_edit'
+import api from '../api'
+import { USER_SPECICAL_INFO } from '../utils/constant'
+
+export default class Address extends wepy.page {
+  config = {
+    navigationBarTitleText: '地址管理'
+  }
+
+  data = {
+    addressList: [],
+    receiverInfo: {},
+    currentPage: 0,
+    type: ''
+  }
+
+  components = {
+    addressList: AddressList,
+    addressAdd: AddressAdd,
+    addressEdit: AddressEdit
+  }
+
+  async getUserAddress (phone, code) {
+    const that = this
+    const userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {}
+    const openId = userSpecialInfo.openid
+    const json = await api.getUserAddress({
+      query: {
+        openId: openId
+      }
+    })
+
+    // console.log(json)
+
+    if (json.data.code === '0') {
+      that.addressList = json.data.list
+      that.$invoke('addressList', 'refreshList', that.addressList)
+    } else {
+      // tip.error(json.data.msg)
+      tip.error('json.data.msg')
+    }
+
+    this.showLoading = false
+  }
+
+  async receiverInf (id) {
+    const that = this
+    const userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {}
+    const openId = userSpecialInfo.openid
+    const json = await api.receiverInfoById({
+      query: {
+        openId: openId
+      }
+    })
+
+    // console.log(json)
+
+    if (json.data.code === '0') {
+      that.receiverInfo = json.data.receiverInfo
+      that.$invoke('addressEdit', 'refreshList', that.receiverInfo)
+    } else {
+      // tip.error(json.data.msg)
+      tip.error('json.data.msg')
+    }
+
+    this.showLoading = false
+  }
+
+  onLoad (opt) {
+    this.currentPage = 0
+    this.getUserAddress()
+    this.type = opt.type === undefined ? '' : opt.type
+    this.$invoke('addressList', 'setOrgType', this.type)
+  }
+
+  onShow () {
+    this.getUserAddress()
+  }
+
+  methods = {
+    getCurrentPage (cur, id) {
+      this.currentPage = cur
+      if (cur === 1 && cur !== 0) {
+        this.receiverInf(id)
+      }
+    }
+  }
+
+  events = {
+    refreshAddList () {
+      this.getUserAddress()
+    }
+  }
+}
+</script>
+
+<style lang="less">
+  .hidden {
+    display: none;
+  }
+</style>

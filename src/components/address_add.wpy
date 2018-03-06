@@ -1,0 +1,178 @@
+<template>
+  <form bindsubmit="formSubmit">
+    <view class="block">
+      <view class="list_item">
+        <view class="title">收货人姓名：</view>
+        <view class="input">
+          <input type="text" name="receiverName" />
+        </view>
+      </view>
+
+      <view class="list_item">
+        <view class="title">联系电话：</view>
+        <view class="input">
+          <input type="text" name="mobile" />
+        </view>
+      </view>
+
+      <view class="list_item">
+        <view class="title">所在地区：</view>
+        <view class="input">
+          <view @tap="openAddressPicker">
+            {{province ? province.name : '省'}} - {{city ? city.name : '市'}} - {{area ? area.name : '区'}}
+          </view>
+          <areaPicker @areaArray.user="areaPickerArray"></areaPicker>
+        </view>
+      </view>
+
+      <view class="list_item">
+        <view class="title">详细地址：</view>
+        <view class="input">
+          <input type="text" name="addressDetail" />
+        </view>
+      </view>
+
+      <view class="list_item">
+        <view class="title">设置默认地址：</view>
+        <view class="input tr" @tap="changeCheckBoxState">
+          <icon type="success" size="20" color="{{isDefault ? 'red' : '#999'}}"></icon>
+        </view>
+      </view>
+    </view>
+
+    <view class="btn_box">
+      <button class="button type_red" formType="submit">完成</button>
+    </view>
+  </form>
+</template>
+
+<script>
+import wepy from 'wepy'
+import tip from '../utils/tip'
+import AreaPicker from './common/wepy-area-picker'
+import api from '../api'
+import { USER_SPECICAL_INFO } from '../utils/constant'
+
+export default class AddressAdd extends wepy.component {
+  data = {
+    isDefault: false,
+    province: '',
+    city: '',
+    area: '',
+    provinceCode: '',
+    cityCode: '',
+    areaCode: ''
+  }
+
+  components = {
+    areaPicker: AreaPicker
+  }
+
+  async addAddress (address) {
+    const that = this
+    const userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {}
+    let isDefault = 0
+    if (this.isDefault) {
+      isDefault = 1
+    }
+    const openId = userSpecialInfo.openid
+    const json = await api.saveAddress({
+      query: {
+        openId: openId,
+        address: address,
+        isDef: isDefault,
+        province: that.provinceCode,
+        city: that.cityCode,
+        area: that.areaCode
+      }
+    })
+
+    // console.log(json)
+
+    if (json.data.code === '0') {
+      that.$emit('currentPage', 0)
+      that.$emit('refreshAddList', 'hehe')
+    } else {
+      // tip.error(json.data.msg)
+      tip.error('json.data.msg')
+    }
+
+    this.showLoading = false
+  }
+
+  methods = {
+    changeCheckBoxState () {
+      this.isDefault = !this.isDefault
+    },
+
+    up () {
+      // 主动触发 upup 方法， 'hehe' 为向父组件传递的数据
+      this.$emit('upup', 'hehe')
+    },
+
+    formSubmit (e) {
+      const receiverName = e.detail.value.receiverName
+      const mobile = e.detail.value.mobile
+      const addressDetail = e.detail.value.addressDetail
+
+      if (receiverName === '') {
+        tip.alert('输入收件人姓名')
+        return
+      }
+      if (mobile === '') {
+        tip.alert('输入联系电话')
+        return
+      }
+      if (addressDetail === '') {
+        tip.alert('输入详细地址')
+        return
+      }
+
+      this.addAddress(e.detail.value)
+    },
+
+    openAddressPicker () {
+      this.$invoke('areaPicker', 'openAddressPicker')
+    },
+
+    areaPickerArray (province, city, area) {
+      this.province = province
+      this.city = city
+      this.area = area
+
+      this.provinceCode = province.code
+      this.cityCode = city.code
+      this.areaCode = area.areaCode
+
+      this.$apply()
+    }
+  }
+}
+</script>
+
+<style lang="less">
+  .block {
+    background: #ffffff;
+  }
+
+  .list_item {
+    display: flex;
+    align-items: center;
+    padding: 35rpx 20rpx;
+    border-top: 1px solid #efefef;
+    .title {
+      margin-right: 20rpx;
+    }
+    .input {
+      flex: 1;
+      input {
+        color: #333;
+      }
+    }
+  }
+
+  .btn_box {
+    margin-top: 64rpx;
+    padding: 0 24rpx;
+  }
+</style>
