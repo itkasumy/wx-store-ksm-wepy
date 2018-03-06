@@ -38,7 +38,8 @@ export default class extends wepy.app {
       'pages/points_rule',
       'pages/points_more',
       'pages/collection',
-      'pages/message'
+      'pages/message',
+      'pages/setting'
     ],
     window: {
       backgroundTextStyle: 'dark',

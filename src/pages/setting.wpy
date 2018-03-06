@@ -1,0 +1,93 @@
+<template>
+  <view class="setting">
+    <scroll-view scroll-y="true" class="swiper-item-box">
+      <view class="list_block">
+        <view class="item_bock">
+          <view class="titel">昵称</view>
+          <view class="item_content">{{userInfo.nickName}}</view>
+        </view>
+        <view class="item_bock">
+          <view class="titel">我的手机</view>
+          <view class="item_content">{{userInfo.mobile}}</view>
+        </view>
+        <view class="item_bock">
+          <view class="titel">收货地址</view>
+          <navigator class="item_content" url="/pages/address">更改地址 &gt;</navigator>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import tip from '../utils/tip'
+import api from '../api'
+import { SYSTEM_INFO, USER_SPECICAL_INFO } from '../utils/constant'
+
+export default class Message extends wepy.page {
+  config = {
+    navigationBarTitleText: '设置'
+  }
+
+  data = {
+    userInfo: {},
+    winHeight: 0,
+    showLoading: false
+  }
+
+  async getUserInfo (phone, code) {
+    const that = this
+    const userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {}
+    const openId = userSpecialInfo.openid
+    const json = await api.getUserInfo({
+      query: {
+        openId: openId
+      }
+    })
+
+    // console.log(json)
+
+    if (json.data.code === '0') {
+      that.userInfo = json.data.user
+      that.$apply()
+    } else {
+      // tip.error(json.data.msg)
+      tip.error('json.data.msg')
+    }
+
+    this.showLoading = false
+  }
+
+  onLoad () {
+    const systemInfo = wepy.getStorageSync(SYSTEM_INFO)
+    this.winHeight = systemInfo.windowHeight
+    this.getUserInfo()
+  }
+}
+</script>
+
+<style lang="less">
+  .list_block {
+    padding-top: 20rpx;
+  }
+
+  .item_bock {
+    display: flex;
+    padding: 40rpx 25rpx;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #f7f7f7;
+    background: #ffffff;
+  }
+
+  .title {
+    color: #808080;
+    font-size: 32rpx;
+  }
+
+  .item_content {
+    font-size: 32rpx;
+    color: #333333;
+  }
+</style>
