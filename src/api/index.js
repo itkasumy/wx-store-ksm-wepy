@@ -124,6 +124,9 @@ const saveAddress = params => wxRequest(params, apiMall + '/api/receiverInfo/sav
 // 根据ID删除收货地址
 const delUserAddress = params => wxRequest(params, apiMall + '/api/receiverInfo/operation')
 
+// 根据订单号查询详情
+const getPayOrderDetail = params => wxRequest(params, apiMall + '/api/mall/goodsOrder/getPayOrderDetail')
+
 /**
  * 商品分类 --- start
  */
@@ -185,5 +188,6 @@ module.exports = {
   getUserAddress,
   receiverInfoById,
   saveAddress,
-  delUserAddress
+  delUserAddress,
+  getPayOrderDetail
 }
