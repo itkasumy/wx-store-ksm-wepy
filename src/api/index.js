@@ -109,6 +109,9 @@ const favoriteInfo = params => wxRequest(params, apiMall + '/api/goodsFavorite/f
 // 删除用户足迹
 const delUserBrowse = params => wxRequest(params, apiMall + '/api/userBrowse/delete')
 
+// 用户消息
+const messageInfo = params => wxRequest(params, apiMall + '/api/systemMessage/messageInfo')
+
 /**
  * 商品分类 --- start
  */
@@ -165,5 +168,6 @@ module.exports = {
   pointInfo,
   browseInfo,
   favoriteInfo,
-  delUserBrowse
+  delUserBrowse,
+  messageInfo
 }

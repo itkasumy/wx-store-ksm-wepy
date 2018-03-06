@@ -14,7 +14,7 @@
 					<i class="iconfont icon-search"></i>
 					<view class="search_input">搜索商品</view>
 				</navigator>
-				<navigator class="message" url="/pages/messages">
+				<navigator class="message" url="/pages/message">
 					<i class="iconfont icon-message"></i>
 					<view class="doc cfff">消息</view>
 				</navigator>
