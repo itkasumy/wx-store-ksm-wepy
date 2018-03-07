@@ -142,7 +142,14 @@ const childGoodsCatetoryList = params => wxRequest(params, apiMall + '/api/mall/
 // 查询广告列表
 const getAdList = params => wxRequest(params, apiMall + '/api/adverts/list')
 
+// 支付统一下单
 const toPay = params => wxRequest(params, apiMall + '/wepay/toPay')
+
+// 直接购买商品
+const preOrder = params => wxRequest(params, apiMall + '/api/mall/goodsOrder/commitData')
+
+// 支付前生成订单
+const saveByCart = params => wxRequest(params, apiMall + '/api/mall/goodsOrder/saveByCart')
 
 module.exports = {
   getDiscoverList,
@@ -189,5 +196,7 @@ module.exports = {
   receiverInfoById,
   saveAddress,
   delUserAddress,
-  getPayOrderDetail
+  getPayOrderDetail,
+  preOrder,
+  saveByCart
 }
