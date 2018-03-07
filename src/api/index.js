@@ -52,6 +52,12 @@ const goodsUnFavorite = params => wxRequest(params, apiMall + '/api/mall/goodsFa
 // 商品是否已收藏
 const goodsIsFavorite = params => wxRequest(params, apiMall + '/api/mall/goodsFavorite/goodsIsFavorite')
 
+// 根据订单号查询详情
+const getOrderInfo = params => wxRequest(params, apiMall + '/api/mall/goodsOrder/getOrderDetail')
+
+// 根据订单号查询物流
+const orderExpressInfo = params => wxRequest(params, apiMall + '/api/orderExpress/orderExpressInfo')
+
 /**
  * 用户信息相关
  */
@@ -198,5 +204,7 @@ module.exports = {
   delUserAddress,
   getPayOrderDetail,
   preOrder,
-  saveByCart
+  saveByCart,
+  getOrderInfo,
+  orderExpressInfo
 }

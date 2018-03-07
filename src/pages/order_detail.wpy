@@ -1,0 +1,346 @@
+<template>
+  <view class="order_detail">
+    <navigator class="item_content" url="/pages/logistics?orderNo={{orderNo}}">
+      <view class="order_state" wx:if="{{obj.status === 2 || obj.status === 1}}">
+        <view class="left">
+          <i class="iconfont icon-complete"></i>
+        </view>
+        <view class="center">
+          <view class="state_doc">{{expressFlowInfo.flowName}}</view>
+          <view class="state_time">{{expressFlowInfo.updateTime}}</view>
+        </view>
+        <view class="right">
+          <view>&gt;</view>
+        </view>
+      </view>
+    </navigator>
+
+    <view class="order_state" wx:if="{{obj.status === 0}}">
+      <view class="left">
+        <view class="unpaid">
+          <i class="iconfont icon-wait"></i>
+          <text class="unpaid_doc">等待付款</text>
+        </view>
+      </view>
+      <view class="right">
+        <text class="time_doc">剩余时间</text>
+        <text class="time_num">59:30:30</text>
+      </view>
+    </view>
+
+    <view class="address_block">
+      <view class="name">
+        <text class="title">收货人：</text>
+        <text class="content">{{obj.receiverName}}\t\t{{obj.receiverPhone}}</text>
+      </view>
+      <view class="address">
+        <text class="title">收货地址：</text>
+        <text class="content">{{obj.receiverAddress}}}</text>
+      </view>
+    </view>
+
+    <view class="goods_block">
+      <shopItemList :goodsList.sync="list"></shopItemList>
+    </view>
+
+    <view class="info_block">
+      <view class="item">
+        <text class="title">订单编号：</text>
+        <text class="content">{{obj.orderNo}}</text>
+      </view>
+      <view class="item">
+        <text class="title">提交时间：</text>
+        <text class="content">{{obj.createTime}}</text>
+      </view>
+      <view class="item">
+        <text class="title">支付方式：</text>
+        <text class="content">微信支付</text>
+      </view>
+      <view class="item" wx:if="{{obj.payStatus === 1}}">
+        <text class="title">付款时间：</text>
+        <text class="content">{{obj.payedTime}}</text>
+      </view>
+    </view>
+
+    <view class="footer">
+      <view class="money">应付款：
+        <text class="receive_money">{{obj.goodsPrices}}</text>
+      </view>
+      <view class="btn_group">
+        <view class="btn" @tap="goLogistics" wx:if="{{obj.status === 2}}" data-id="{{obj.orderNo}}">查看物流</view>
+        <view class="btn type_pick dsh" @tap="completion" wx:if="{{obj.status === 2}}" data-id="{{obj.orderNo}}">待收货</view>
+        <view class="btn type_pick dsh" @tap="payMoney" wx:if="{{obj.status === 2}}" data-id="{{obj.orderNo}}" data-orderno="{{obj.payOrderNo}}">立即付款</view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import tip from '../utils/tip'
+import ShopItemList from '../components/shop_item_list'
+import api from '../api'
+import { SYSTEM_INFO, USER_SPECICAL_INFO } from '../utils/constant'
+
+export default class OrderDetail extends wepy.page {
+  config = {
+    navigationBarTitleText: '订单详情'
+  }
+
+  data = {
+    obj: {},
+    orderNo: '',
+    flag: '',
+    list: [],
+    orderExpress: {},
+    expressFlowInfo: {}
+  }
+
+  components = {
+    shopItemList: ShopItemList
+  }
+
+  async getOrderInfo (currentPage, size) {
+    // const that = this
+    // const userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {}
+    // const openId = userSpecialInfo.openid
+    const json = await api.getOrderInfo({
+      query: {
+        orderNo: this.orderNo
+      }
+    })
+
+    // console.log(json)
+
+    if (json.data.code === '0') {
+      this.obj = json.data.obj
+      // this.list = [] // ???
+      this.list = [...this.list, ...json.data.obj.orderItemList]
+      this.$invoke('shopItemList', 'refreshList', this.list)
+    } else {
+      // tip.error(json.data.msg)
+      tip.error('json.data.msg')
+    }
+    this.$apply()
+  }
+
+  async editOrderInfo (orderNo, flag) {
+    const json = await api.editOrderInfo({
+      query: {
+        orderNo: orderNo,
+        flag: flag
+      }
+    })
+
+    // console.log(json)
+
+    if (json.data.code === '0') {
+      if (this.flag === 2) {
+        console.log(123)
+      }
+    } else {
+      // tip.error(json.data.msg)
+      tip.error('json.data.msg')
+    }
+    this.$apply()
+  }
+
+  async getOrderExpressInfo () {
+    const json = await api.orderExpressInfo({
+      query: {
+        orderNo: this.orderNo
+      }
+    })
+
+    // console.log(json)
+
+    if (json.data.code === '0') {
+      this.orderExpress = json.data.orderExpress
+      this.expressFlowInfo = json.data.expressFlowInfo
+    } else {
+      // tip.error(json.data.msg)
+      tip.error('json.data.msg')
+    }
+    this.$apply()
+  }
+
+  onLoad (opt) {
+    this.orderNo = opt.orderNo
+    this.getOrderInfo()
+    this.getOrderExpressInfo()
+  }
+
+  methods = {
+    async delOrder (e) {
+      this.flag = 2
+      this.orderNo = e.currentTarget.dataset.id
+      await tip.confirm('是否删除订单')
+      this.editOrderInfo(this.orderNo, this.flag)
+    },
+
+    async completion (e) {
+      this.flag = 3
+      this.orderNo = e.currentTarget.dataset.id
+      await tip.confirm('是否确认收货')
+      this.editOrderInfo(this.orderNo, this.flag)
+    },
+
+    async goLogistics () {
+      tip.confirm('查看物流')
+    },
+
+    async payMoney (e) {
+      const tradeNo = e.currentTarget.dataset.tradeno
+      const userSpecialInfo = wepy.getStorageSync(USER_SPECICAL_INFO) || {}
+      const openId = userSpecialInfo.openId
+      const pay = await api.toPay({
+        query: {
+          openId: openId,
+          orderNo: tradeNo
+        }
+      })
+
+      // console.log(json)
+
+      if (pay.data.code === '0') {
+        wx.requestPayment({
+          appId: pay.data.appId,
+          timeStamp: pay.data.timeStamp,
+          nonceStr: pay.data.nonceStr,
+          package: pay.data.package,
+          signType: 'MD5',
+          paySign: pay.data.paySign,
+          success: res => {
+            setTimeout(() => {
+              // 支付成功关闭loading跳转到支付成功页面
+              tip.loaded()
+              wepy.navigateTo({
+                url: '/pages/pay_success?orderNo=' + tradeNo
+              })
+            }, 2000)
+          },
+          fail: res => {
+            tip.alert('支付失败')
+          }
+        })
+      } else {
+        tip.alert('支付失败')
+      }
+    }
+  }
+}
+</script>
+
+<style lang="less">
+  .order_detail {
+    position: relative;
+  }
+
+  .order_state {
+    padding: 35rpx 24rpx;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10rpx;
+    background: #ffffff;
+    .iconfont {
+      font-size: 40rpx;
+      color: #6a6a6a;
+    }
+    .state_time {
+      padding-top: 24rpx;
+    }
+    .center {
+      flex: 1;
+      margin-left: 50rpx;
+    }
+    .right {
+      display: flex;
+      align-items: center;
+    }
+    .unpaid {
+      margin-left: 50rpx;
+      .unpaid_doc {
+        margin-left: 10rpx;
+      }
+    }
+    .time_doc {
+      font-size: 26rpx;
+      color: #999999;
+    }
+    .time_num {
+      font-size: 26rpx;
+      margin-right: 59rpx;
+    }
+  }
+
+  .address_block {
+    padding: 30rpx;
+    background: #ffffff;
+    margin-top: 10rpx;
+    .address {
+      padding-top: 20rpx;
+    }
+    .title {
+      color: #858585;
+    }
+    .content {
+      color: #000000;
+      padding-left: 24rpx;
+    }
+  }
+
+  .goods_block {
+    margin-top: 10rpx;
+    background: #ffffff;
+  }
+
+  .info_block {
+    margin-top: 10rpx;
+    padding: 18px;
+    background: #ffffff;
+    .item {
+      padding-top: 40rpx;
+      .title {
+        font-size: 28rpx;
+      }
+      .content {
+        color: #808080;
+        font-size: 28rpx;
+      }
+    }
+  }
+
+  .footer {
+    position: fixed;
+    bottom: 0;
+    height: 92rpx;
+    width: 100%;
+    background: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18rpx;
+    border-top: 1px solid #e6e6e6;
+    .btn_group {
+      display: flex;
+      margin-right: 30rpx;
+      .btn {
+        padding: 20rpx;
+        border: 1px solid #ccc;
+        text-align: center;
+        margin: 0 auto;
+        width: 180rpx;
+        -moz-border-radius: 10rpx;
+        -webkit-border-radius: 10rpx;
+        border-radius: 10rpx;
+      }
+      .dsh {
+        margin-left: 20rpx;
+      }
+    }
+    .receive_money {
+      color: #ff4856;
+    }
+  }
+</style>
