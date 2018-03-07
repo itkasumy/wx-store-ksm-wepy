@@ -80,7 +80,7 @@ import wepy from 'wepy'
 import tip from '../utils/tip'
 import ShopItemList from '../components/shop_item_list'
 import api from '../api'
-import { SYSTEM_INFO, USER_SPECICAL_INFO } from '../utils/constant'
+import { USER_SPECICAL_INFO } from '../utils/constant'
 
 export default class OrderDetail extends wepy.page {
   config = {

@@ -108,7 +108,7 @@ import wepy from 'wepy'
 import tip from '../utils/tip'
 import swipeDelete from '../components/common/wepy-swipe-delete'
 import api from '../api'
-import { SYSTEM_INFO, USER_SPECICAL_INFO, ADDRESS_ID } from '../utils/constant'
+import { USER_SPECICAL_INFO, ADDRESS_ID } from '../utils/constant'
 
 export default class ComfireOrder extends wepy.page {
   config = {
@@ -393,7 +393,7 @@ export default class ComfireOrder extends wepy.page {
         })
         return false
       }
-      this.goToPay()
+      this.goToPay(fId)
     },
 
     setAddress () {
@@ -409,7 +409,7 @@ export default class ComfireOrder extends wepy.page {
       this.operating = true
       const index = parseInt(e.currentTarget.dataset.index)
       const id = e.currentTarget.dataset.id
-      const num = this.list[index].num
+      let num = this.list[index].num
       if (num > 1) {
         num--
       } else {
@@ -425,7 +425,7 @@ export default class ComfireOrder extends wepy.page {
       this.operating = true
       const index = parseInt(e.currentTarget.dataset.index)
       const id = e.currentTarget.dataset.id
-      const num = this.list[index].num
+      let num = this.list[index].num
       num++
       this.addGoodNum(id, num, index)
     },

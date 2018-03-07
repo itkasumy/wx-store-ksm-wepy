@@ -32,9 +32,9 @@
 
 <script>
 import wepy from 'wepy'
-import tip from 'tip'
+import tip from '../utils/tip'
 import api from '../api'
-import { SYSTEM_INFO, USER_SPECICAL_INFO } from '../utils/constant'
+// import { SYSTEM_INFO, USER_SPECICAL_INFO } from '../utils/constant'
 
 export default class paySuccess extends wepy.page {
   config = {
